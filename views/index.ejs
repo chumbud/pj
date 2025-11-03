@@ -35,11 +35,24 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W5W3L42G"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
+        <div class="me">
+            <div id="animation-container"></div>
+            <div class="shadow"></div>
+        </div>
+    <section class="nav">
+        <ul class="top">
+            <a href="/">home</a>
+            <a href="/inspiration">my inspiration</a>
+        </ul>
+        <ul class="bottom">
+            <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
+            <a href="https://www.linkedin.com/in/pjrosa/" target="_blank">linkedin</a>
+            <a href="https://discord.com/invite/srk3VVxt" target="_blank">discord </a>
+            <a href="https://www.instagram.com/spoooji/" target="_blank">instagram </a>
+            <a href="https://letterboxd.com/spooji/" target="_blank">letterboxd </a>
+        </ul>
+    </section>
     <main class="page-layout">
-            <div class="me">
-                <div id="animation-container"></div>
-                <div class="shadow"></div>
-            </div>
         <section class="left-content">
             <div class="emoji-header">
                 <span><span class="ear">૮</span><span class="paw">⍝<span></span><span class="eye">•</span> <span class="nose">ᴥ</span> <span class="eye">•</span><span class="paw">⍝</span><span class="ear">ა</span></span>
@@ -54,13 +67,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </section>
 
         <section class="right-decor">
-            <div class="social-links-top">
-                <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
-                <a href="https://www.linkedin.com/in/pjrosa/" target="_blank">linkedin</a>
-                <a href="https://discord.com/invite/srk3VVxt" target="_blank">discord </a>
-                <a href="https://www.instagram.com/spoooji/" target="_blank">instagram </a>
-                <a href="https://letterboxd.com/spooji/" target="_blank">letterboxd </a>
-            </div>
             <div class="ascii-art-container">
                 <pre class="stars ascii-art">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠶⢞⣟⣯⠶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢖⡛⠥⠒⠋⠉⠀⠈⢻⡫⣧⠀⠀⠀⠀⠀⠀⠀⢄⠀⠀⠀⢠⢄⠀⠀⠀⠇⠀⢀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -126,19 +132,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
         </section>
     </main>
-    <section>
-        <div class="channel-content">
-            <% channelBlocks.forEach(block => { %>
-                <div class="channel-block">
-                    <h2><%= block.title %></h2>
-                    <% if (block.image) { %>
-                        <img src="<%= block.image.original.url %>" alt="<%= block.title %>">
-                    <% } %>
-                    <p><%= block.content %></p>
-                </div>
-            <% }); %>
-        </div>
-    </section>
 
 <script type="module" src="/js/utils.js"></script>
 <script type="module" src="/js/interests.js"></script> 
