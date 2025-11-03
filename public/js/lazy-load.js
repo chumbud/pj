@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         totalPages = parseInt(totalPagesElement.dataset.value);
         currentPage = parseInt(currentPageElement.dataset.value);
     } else {
-        console.error('Lazy loading metadata not found. Check inspiration.ejs footer for data-attributes.');
+        console.error('Lazy loading metadata not found. Check likes.ejs footer for data-attributes.');
         return;
     }
 
@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Set up the Modal event listener (close buttons, etc.)
     setupModalListeners();
 
-    // 🌟 FIX: CRUCIAL CALL FOR INITIAL EJS-RENDERED BLOCKS 🌟
     // 4. Attach click listeners to all existing image blocks for the modal
     document.querySelectorAll('.image-link').forEach(link => {
         link.addEventListener('click', handleImageClick);
@@ -177,8 +176,7 @@ function renderBlocks(blocks) {
             link.dataset.originalUrl = block.image.original.url;
             link.dataset.title = block.title || 'Are.na Image Block';
 
-            // 🚨 FIX: Add safety check for block.source before accessing .url
-            link.dataset.sourceUrl = (block.source && block.source.url) ? block.source.url : '';
+            link.dataset.sourceUrl = (block.source && block.source.url) ? block.source.url : '#';
 
             // Create the image element
             const img = document.createElement('img');

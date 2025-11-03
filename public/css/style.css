@@ -16,12 +16,16 @@ html {
 
 body {
   margin: 0;
-  margin-left: 200px;
   font-size: 1.6rem;
   color: #606060;
   background-color: #fff;
   min-height: 100vh;
   display: flex;
+}
+@media (min-width: 76.8rem) {
+  body {
+    margin-left: 200px;
+  }
 }
 
 *, *::before, *::after {
@@ -94,14 +98,20 @@ a[href^="https://"]:hover:after {
   flex-direction: column;
   gap: 1rem;
   z-index: 5;
+  padding-top: 2rem;
 }
 .left-content .emoji-header {
-  font-size: 2.5rem;
+  font-size: 4rem;
   font-weight: 800;
   font-family: monospace;
   position: relative;
   width: fit-content;
   animation: jump 3s ease-out infinite forwards;
+}
+@media (min-width: 76.8rem) {
+  .left-content .emoji-header {
+    font-size: 2.5rem;
+  }
 }
 .left-content .emoji-header:before, .left-content .emoji-header:after {
   position: absolute;
@@ -126,7 +136,7 @@ a[href^="https://"]:hover:after {
   right: -2rem;
 }
 .left-content p {
-  font-size: 2.25rem;
+  font-size: 3.5rem;
   max-width: 50rem;
   margin: 0;
 }
@@ -143,6 +153,7 @@ a[href^="https://"]:hover:after {
 @media (min-width: 76.8rem) {
   .left-content {
     max-width: 70%;
+    padding-top: 0;
   }
 }
 
@@ -314,15 +325,21 @@ a[href^="https://"]:hover:after {
 .cta-link {
   color: #ff00ff;
   font-weight: 800;
-  font-size: 3.5rem;
+  font-size: 5rem;
   text-decoration-style: solid;
-  text-decoration-thickness: 8px;
   text-decoration-color: #ff00ff;
   gap: 1rem;
   width: fit-content;
-  line-height: 1;
+  line-height: 1.3;
   padding: 0 0.25rem 1rem 0.5rem;
   margin-left: -0.5rem;
+  text-decoration-thickness: 6px;
+}
+@media (min-width: 76.8rem) {
+  .cta-link {
+    font-size: 3.5rem;
+    text-decoration-thickness: 8px;
+  }
 }
 .cta-link[href^="https://"]::after {
   width: 3rem;
@@ -370,7 +387,7 @@ a[href^="https://"]:hover:after {
   opacity: 0.5;
   z-index: -1;
   right: 0;
-  bottom: 10%;
+  bottom: 25vh;
   left: 0;
 }
 @media (min-width: 76.8rem) {
@@ -388,12 +405,17 @@ a[href^="https://"]:hover:after {
 }
 
 .last-updated {
-  font-size: 1.5rem;
+  font-size: 2rem;
   letter-spacing: -1px;
   margin: 1rem -1rem -1rem -1rem;
   padding: 1rem;
   border-top: 1px solid black;
   width: calc(100% + 2rem);
+}
+@media (min-width: 76.8rem) {
+  .last-updated {
+    font-size: 1.5rem;
+  }
 }
 
 .like-bubble {
@@ -403,7 +425,7 @@ a[href^="https://"]:hover:after {
   color: rgba(96, 96, 96, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.75);
   padding: 1rem;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   z-index: 1000;
   gap: 0.5rem;
   width: fit-content;
@@ -418,6 +440,12 @@ a[href^="https://"]:hover:after {
 .like-bubble .get-another-link {
   line-height: 1;
   color: #ff00ff;
+  font-size: 3rem;
+}
+@media (min-width: 76.8rem) {
+  .like-bubble .get-another-link {
+    font-size: 1.5rem;
+  }
 }
 .like-bubble .get-another-link:hover {
   text-decoration: underline;
@@ -460,7 +488,12 @@ a[href^="https://"]:hover:after {
 }
 #interest-display span {
   letter-spacing: -2px;
-  font-size: 2rem;
+  font-size: 3rem;
+}
+@media (min-width: 76.8rem) {
+  #interest-display span {
+    font-size: 2rem;
+  }
 }
 
 .interest-icon {
@@ -507,7 +540,7 @@ a[href^="https://"]:hover:after {
 
 .nav {
   border-right: 1px solid black;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: space-between;
   position: fixed;
@@ -516,6 +549,11 @@ a[href^="https://"]:hover:after {
   top: 0;
   z-index: 100;
   background-color: white;
+}
+@media (min-width: 76.8rem) {
+  .nav {
+    display: flex;
+  }
 }
 .nav ul, .nav li {
   margin: 0;
@@ -529,6 +567,10 @@ a[href^="https://"]:hover:after {
   padding: 0.5rem 1rem;
   width: 200px;
   text-align: right;
+}
+.nav a.current {
+  color: #ff00ff;
+  text-decoration: underline;
 }
 .nav a:hover {
   text-decoration: underline;
@@ -576,6 +618,7 @@ a[href^="https://"]:hover:after {
   left: unset;
   right: 0px;
   z-index: 100;
+  transition: all 0.1s ease-in-out;
 }
 @media (min-width: 76.8rem) {
   .me {
@@ -584,6 +627,9 @@ a[href^="https://"]:hover:after {
     bottom: unset;
     left: unset;
   }
+}
+.me:active, .me:focus, .me:focus-visible {
+  scale: 1.1;
 }
 .me .shadow {
   width: 120px;
@@ -611,17 +657,34 @@ a[href^="https://"]:hover:after {
   }
 }
 .inspiration-about {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   letter-spacing: -1px;
   color: black;
   padding: 1rem;
 }
+@media (min-width: 76.8rem) {
+  .inspiration-about {
+    font-size: 2.5rem;
+  }
+}
 
 .channel-content {
   display: flex;
-  flex-directions: row;
+  flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
+}
+.channel-content .channel-block {
+  width: calc((100% - 2rem) / 3);
+  height: 19vh;
+  overflow: hidden;
+}
+@media (min-width: 76.8rem) {
+  .channel-content .channel-block {
+    width: unset;
+    height: unset;
+    overflow: visible;
+  }
 }
 .channel-content .channel-block a {
   padding: 0;
@@ -629,11 +692,70 @@ a[href^="https://"]:hover:after {
   font-size: 1rem;
 }
 .channel-content .channel-block .image-link {
-  display: flex;
   transition: all 0.1s ease-in-out;
+}
+@media (min-width: 76.8rem) {
+  .channel-content .channel-block .image-link {
+    display: flex;
+  }
 }
 .channel-content .channel-block .image-link:hover {
   scale: 1.05;
+}
+.channel-content .channel-block img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: all 0.1s ease-in-out;
+}
+@media (min-width: 76.8rem) {
+  .channel-content .channel-block img {
+    width: unset;
+  }
+}
+
+.mobile-feed-link {
+  top: 1rem;
+  right: 2rem;
+  position: fixed;
+  z-index: 1000;
+  font-size: 3rem;
+}
+@media (min-width: 76.8rem) {
+  .mobile-feed-link {
+    display: none;
+  }
+}
+
+.back-button {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  z-index: 100;
+  background-color: black;
+  color: white;
+  padding: 0.5rem 2rem 0.85rem 1.5rem;
+  border-radius: 100px;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  transition: all 0.1s ease-in-out;
+  text-decoration: none;
+}
+@media (min-width: 76.8rem) {
+  .back-button {
+    display: none;
+  }
+}
+.back-button:before {
+  content: url("../img/white.svg");
+  width: 24px;
+  height: 24px;
+  rotate: 270deg;
+  margin-right: 2rem;
+  margin-left: -1rem;
+  display: inline-block;
 }
 
 .modal {

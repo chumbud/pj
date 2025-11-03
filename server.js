@@ -51,13 +51,13 @@ async function fetchArenaBlocks(page = 1, per = 10) {
 
 
 // 3. Define the main route: Initial Page Load (HTML + first 10 blocks)
-app.get('/inspiration', async (req, res) => {
+app.get('/likes', async (req, res) => {
     const initialLoadCount = 10;
     const data = await fetchArenaBlocks(1, initialLoadCount); // Fetch page 1 (first 10)
 
     // Render the EJS file, passing blocks AND the necessary pagination info
     // This data will be critical for the client-side lazy-loader.js
-    res.render('inspiration', {
+    res.render('likes', {
         pageTitle: data.title,
         channelBlocks: data.blocks,
         totalPages: data.totalPages, // Pass to client for lazy loading control
@@ -66,7 +66,6 @@ app.get('/inspiration', async (req, res) => {
 });
 
 
-// 🌟 NEW API ROUTE FOR LAZY LOADING 🌟
 // This route responds with pure JSON data, which the client-side JavaScript will use to append content.
 app.get('/api/blocks', async (req, res) => {
     // The client will pass the next page number in the query string (e.g., /api/blocks?page=2)
@@ -82,7 +81,6 @@ app.get('/api/blocks', async (req, res) => {
         totalPages: data.totalPages,
     });
 });
-// 🌟 END NEW API ROUTE 🌟
 
 
 app.get('/', (req, res) => {
