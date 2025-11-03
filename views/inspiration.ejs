@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W5W3L42G');</script>
+<!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PJ!</title>
+    <meta name="description"
+        content="PJ - Frontend Developer & Product Designer based in Queens, NY, passionate about helping US public school teachers fundraise for classroom supplies.">
+    <meta name="author" content="PJ">
+    <link rel="canonical" href="https://pj.codes/">
+    <meta property="og:title" content="PJ! - Frontend Developer & Product Designer">
+    <meta property="og:description"
+        content="PJ - Frontend Developer & Product Designer based in Queens, NY, passionate about helping US public school teachers fundraise for classroom supplies.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pj.codes/">
+    <meta property="og:image" content="./img/2.jpg">
+    <link rel="icon" href="/img/2.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W5W3L42G"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+        <div class="me">
+            <div id="animation-container"></div>
+            <div class="shadow"></div>
+        </div>
+    <section class="nav">
+        <ul class="top">
+            <a href="/">home</a>
+            <a href="/inspiration">my inspiration</a>
+        </ul>
+        <ul class="bottom">
+            <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
+            <a href="https://www.linkedin.com/in/pjrosa/" target="_blank">linkedin</a>
+            <a href="https://discord.com/invite/srk3VVxt" target="_blank">discord </a>
+            <a href="https://www.instagram.com/spoooji/" target="_blank">instagram </a>
+            <a href="https://letterboxd.com/spooji/" target="_blank">letterboxd </a>
+        </ul>
+    </section>
+<section class="arena-feed">
+    <div class="inspiration-about">I follow a ton of artists and save their work for inspiration later. I update this feed daily :) All sources linked. <br>(source: my <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>)</div>
+    <div id="channel-content" class="channel-content">
+        <% channelBlocks.forEach(block => { %>
+            <div class="channel-block">
+                <% if (block.image && block.image.original) { %>
+                    <!-- MODIFIED: Image Block wrapped in a clickable link -->
+                    <a href="javascript:void(0);" class="image-link"
+                       data-original-url="<%= block.image.original.url %>"
+                       data-title="<%= block.title || 'Are.na Image Block' %>"
+                       data-source-url="<%= block.source.url %>">
+                        <!-- Use the 'display' URL for the thumbnail/grid view -->
+                        <img src="<%= block.image.thumb.url %>"
+                             alt="<%= block.title || 'Are.na Image Block' %>"
+                             onerror="this.onerror=null;this.src='https://placehold.co/400x300/F0F0F0/606060?text=Image+Error'">
+                    </a>
+                <% } else if (block.content) { %>
+                    <!-- Text Block (simple rendering) -->
+                    <div class="block-content">
+                        <p><%= block.content %></p>
+                    </div>
+                <% } else if (block.source && block.source.url) { %>
+                    <!-- Link Block -->
+                    <div class="block-link">
+                        <p class="block-title"><%= block.title || 'Link Block' %></p>
+                        <p class="block-source">
+                            <a href="<%= block.source.url %>" target="_blank">View Source</a>
+                        </p>
+                    </div>
+                <% } else { %>
+                    <!-- Fallback -->
+                    <p>Unsupported Block Type</p>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+<div id="full-image-modal" class="modal">
+    <!-- Modal Content Area -->
+    <div class="modal-content">
+
+        <!-- Close Button -->
+        <span id="modal-close-btn" class="close-btn">&times;</span>
+
+        <!-- Loading Placeholder -->
+        <!-- This is shown when the modal opens and hidden when the image loads -->
+        <div id="modal-placeholder" class="loading-placeholder">
+            Loading Full Image...
+        </div>
+
+        <!-- High-Resolution Image -->
+        <!-- This is initially hidden (style="display: none;" or via CSS) -->
+        <img id="modal-image" src="" alt="Full resolution image" class="full-image">
+                <!-- Image Title/Caption -->
+        <a id="modal-title-link" href="#" target="_blank" class="image-title">
+            <h2 id="modal-title"></h2>
+        </a>
+    </div>
+</div>
+<div id="loading-spinner" style="text-align: center; padding: 20px; font-weight: bold;"></div>
+    <div id="current-page" data-value="<%= currentPage %>" style="display:none;"></div>
+    <div id="total-pages" data-value="<%= totalPages %>" style="display:none;"></div>
+</section>
+        <section class="right-decor">
+            <div class="ascii-art-container">
+                <pre class="stars ascii-art">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⠶⢞⣟⣯⠶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⢖⡛⠥⠒⠋⠉⠀⠈⢻⡫⣧⠀⠀⠀⠀⠀⠀⠀⢄⠀⠀⠀⢠⢄⠀⠀⠀⠇⠀⢀⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣥⠋⠀⢠⢾⠿⠿⢿⢳⡀⢳⡽⣇⠀⠀⠀⠀⠀⢀⠈⠢⡄⠀⠼⠏⢧⡀⡼⢀⡔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡧⠇⠀⣏⡧⡴⢳⡄⣾⡇⠀⢣⡺⡆⠀⠀⠀⠀⠀⠈⠲⢌⠃⡟⠀⠪⠳⠥⡥⣤⣤⡦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣼⡀⠈⠙⠓⣋⡰⢙⡇⠀⠀⡧⢻⡄⠀⠀⢠⡶⣦⠶⠒⠘⣡⣦⣴⠢⡌⠁⡡⠔⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢯⣜⣶⣯⠵⠖⠒⠋⠀⣠⠔⣩⡞⠃⠀⠀⠀⠉⠓⠦⣄⠐⢧⡘⠬⠟⣹⠆⡇⢀⠀⠐⠒⠂⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⢛⣸⠼⠃⠀⠀⠀⠀⠤⠤⠤⢘⡘⡇⠀⠻⣤⠿⠃⠀⠘⢇⠛⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠒⠁⡰⢀⣀⡤⠚⡖⠦⣤⣠⢊⡧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡯⠟⠉⠀⢡⠘⡀⠀⠉⠉⠛⠝⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⠳⡠⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠑⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡇⠀⠄⠊⡱⢄⠀⠀⠀⢠⠀⢠⠁⠀⠀⠀⠀⠀⢀⡀⢤⠀⡄⡀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⡀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠣⠀⠀⠀⠀⠊⠱⣄⠀⡼⠀⡈⠀⢀⣀⣴⠲⢉⠉⠀⠐⠀⡈⡇⠀⠀⠀⠀⢀⡠⢶⣚⠭⠚⠋⣁⡠⡶⢤⣄⣀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⢰⣶⣄⠀⠀⣟⢷⡇⣠⣦⠚⠍⠂⠀⣤⣴⣶⢿⡄⠀⣈⠅⠀⠀⠀⠀⢹⡅⡏⠀⠀⡴⡫⠑⣩⣬⣑⡚⠼⡛⢶
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣄⠀⣿⣿⣽⣷⣄⡟⠙⠁⠛⠁⠀⣠⣴⣿⢿⠻⣧⡿⠀⠨⡝⠀⠀⠀⠀⠀⢸⠆⡇⠀⢼⢏⠀⢞⡕⢒⠺⡏⡧⠘⢸
+⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⡄⠀⠀⢻⡯⠖⣏⠻⠷⣄⣀⣠⣴⠿⣟⠩⢦⠪⣞⡿⠁⠀⢰⠁⠀⠀⠀⠀⠀⢸⡇⡇⠀⠘⡊⡌⠶⣍⠽⠁⡇⡇⠈⣸
+⠀⠀⠀⠀⠄⡀⠈⠀⠠⣀⠁⣷⣆⡀⢸⣿⣿⢷⣄⠜⠆⣉⠁⣴⣷⣿⠎⡄⣂⣿⠃⠀⠈⡞⠀⠀⠀⠀⠀⠀⠨⡇⢁⠀⠀⠱⡝⠠⠤⣤⣰⣼⠁⠧⡇
+⠀⠀⠀⠀⠀⠀⠈⠐⠠⣀⡝⠧⣤⠁⢺⣿⣹⡾⠋⠷⣼⢤⠟⠒⢛⡾⡡⣵⣿⢃⣀⣤⣼⠤⠐⠀⠂⠀⠀⠀⠀⠸⣬⣓⠤⡄⣨⣛⣛⣉⢁⣀⠜⣸⠁
+⠀⠀⠀⠀⢀⣠⢴⡲⠉⠀⠉⠳⢈⣠⣿⠓⠈⣇⠀⠀⠀⠀⠀⠀⣰⡇⡼⣽⠃⣋⣉⣭⡇⠠⠠⠄⠀⠀⠀⠀⠀⠀⠀⠉⠉⠙⠛⠲⠷⠾⠭⠶⠚⠁⠀
+⠀⢀⣤⡶⠓⠉⠀⣀⣤⣶⣶⢿⡟⡯⣀⣣⣶⠏⠀⠀⠀⠀⠀⠀⢾⣅⠶⣿⣦⣭⣭⠼⠷⡄⠤⠤⠤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⡜⡛⡂⡀⠀⠀⠘⢿⣿⡷⣟⣯⣋⢖⡿⠽⠏⠶⡆⠀⠀⣠⣤⣀⣀⣚⣳⣜⢋⡿⣦⣀⠀⠊⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠉⠛⠶⠴⣠⣀⠀⠀⠀⠉⠉⢛⠻⠿⢶⣛⡎⡩⢿⣐⣾⠓⣡⢀⣬⡩⣩⣙⠄⢊⡽⣻⢶⡀⠁⠳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠉⠂⠊⢧⣦⡞⢋⣤⠄⠀⢿⣮⠵⡘⢿⡟⣵⣺⣿⠟⠓⣿⠾⣟⣾⣾⣽⣳⣟⣦⠈⡚⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠂⠀⠀⢠⠛⡇⢰⡄⠈⣷⣯⢱⠘⣮⣯⡟⠁⢸⣧⢹⣶⠀⠀⠉⠛⢻⣯⣽⣿⠈⠊⢣⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⠁⠀⢸⡟⠁⠀⠹⣿⣹⣲⣿⡿⠁⠹⣦⠿⡍⠙⠗⠒⠦⣤⢀⡀⢉⠉⠀⠀⡓⢧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠜⠁⢡⠂⠀⠀⣿⣷⣿⡯⠀⠠⣠⡟⡄⠙⡀⠈⠂⠀⠀⠈⠉⠒⠢⠬⠴⠤⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⠁⠀⠀⠀⢳⡀⠀⠘⢿⡟⠁⠀⣸⠏⠀⠀⡀⠑⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏⠀⠀⠀⠀⢀⣰⠏⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⡄⠀⠀⠀⢢⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⣆⡆⠞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</pre>
+                <pre class="paw-deco ascii-art">⠀⠀⠀⠀⣠⠤⣄⣀⣠⠤⣄⠀⡀⠀
+⠀⠀⠀⡼⢡⣖⣦⠙⣴⣶⡌⢧⠀⠀
+⠀⡴⢋⣁⡜⢮⠿⠀⠿⡷⢃⣈⡙⢦
+⠰⡇⢯⣾⡷⠀⢰⣷⣄⠀⢾⡆⡽⢸
+⠀⠹⢬⠉⢁⡴⣿⣿⣟⣦⡈⠉⡥⠏
+⠀⠀⠘⣆⠘⢧⣿⠭⣭⡼⠃⣰⠃⠀
+⠀⠀⠀⠈⠳⢤⣀⣂⣀⡤⠖⠁⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⢀⠀⠀⠀</pre>
+                <pre class="star ascii-art">⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⠋⠀⠀⠙⢿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣸⡇⠀⠀⠀⠀⠀⠙⢿⣦⡀⠀⠀⢀⣀⣀⣠⣤⣀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣿⠇⠀⠀⠀⠀⠀⠀⠀⠙⠿⠿⠟⠛⠛⠋⠉⠉⠛⣷⡄
+⠀⠀⠀⠀⠀⠀⠀⢠⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇
+⠀⠀⠀⠀⣀⣤⣶⠿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠃
+⠀⣠⣶⠿⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡿⠃⠀
+⢸⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡿⠁⠀⠀
+⢸⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣷⡀⠀⠀
+⠀⠙⠿⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣷⡄⠀
+⠀⠀⠀⠀⠉⠛⠿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⡄
+⠀⠀⠀⠀⠀⠀⠀⠘⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇
+⠀⠀⠀⠀⠀⠀⠀⠀⣿⡆⠀⠀⠀⠀⠀⠀⠀⣠⣶⣶⣦⣤⣤⣄⣀⣀⣤⡿⠃
+⠀⠀⠀⠀⠀⠀⠀⠀⢹⡇⠀⠀⠀⠀⠀⣠⣾⠏⠀⠀⠀⠈⠉⠉⠙⠛⠉⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣄⠀⠀⣠⣾⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠛⠛⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</pre>
+
+            </div>
+            <div class="faded-image" style="background-image: url('img/2.jpg');"></div>
+        </section>
+<script type="module" src="/js/scrub.js"></script>
+<script type="module" src="/js/lazy-load.js"></script>
+</body>
+</html>

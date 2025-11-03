@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-require('dotenv').config(); 
+require('dotenv').config();
 const path = require('path');
 
 const app = express();
@@ -14,40 +14,83 @@ app.set('views', path.join(__dirname, 'views'));
 // 2. Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 3. Define the main route and fetch data
-app.get('/', async (req, res) => {
-    // The public API URL for channel content
-    const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}`;
-    
-    let blocks = [];
-    let channelTitle = 'Are.na Channel'; // Default title for safety
+/**
+ * Helper function to fetch blocks from the Are.na API with pagination.
+ * @param {number} page - The page number to fetch (defaults to 1).
+ * @param {number} per - The number of blocks per page (defaults to 10).
+ * @returns {object} The response data including blocks, title, and pagination info.
+ */
+async function fetchArenaBlocks(page = 1, per = 10) {
+    // API URL with dynamic pagination, sorting for newest first, and blocks per page
+    // The direction=desc ensures the latest blocks are on page 1, 2, 3, etc.
+    const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
 
     try {
-        // Fetching without the Authorization header ensures public access to the channel slug.
         const response = await axios.get(apiUrl);
+        // The API provides the total number of blocks (and therefore total pages) in the response metadata.
+        const totalBlocks = response.data.length || 0;
+        const totalPages = Math.ceil(totalBlocks / per);
 
-        blocks = response.data.contents || [];
-        channelTitle = response.data.title || channelTitle; // Get title from response
-
-        // Console output is now clean and only confirms success
-        console.log(`Successfully fetched ${blocks.length} blocks from channel: ${channelTitle}`);
-
+        return {
+            blocks: response.data.contents || [],
+            title: response.data.title || 'Are.na Channel',
+            currentPage: page,
+            totalPages: totalPages,
+            // totalBlocks: totalBlocks // You could use this too if needed
+        };
     } catch (error) {
-        // Log the error to the server console, but handle gracefully on the frontend.
-        console.error(`Error fetching data for ${ARENA_CHANNEL_SLUG}:`, error.message);
-        channelTitle = 'Error Loading Channel';
+        console.error(`Error fetching data for ${ARENA_CHANNEL_SLUG} (Page ${page}):`, error.message);
+        return {
+            blocks: [],
+            title: 'Error Loading Channel',
+            currentPage: page,
+            totalPages: 1,
+        };
     }
-    
-    // 4. Render the page with the fetched data
-    res.render('index', { 
-        pageTitle: channelTitle, 
-        channelBlocks: blocks 
+}
+
+
+// 3. Define the main route: Initial Page Load (HTML + first 10 blocks)
+app.get('/inspiration', async (req, res) => {
+    const initialLoadCount = 10;
+    const data = await fetchArenaBlocks(1, initialLoadCount); // Fetch page 1 (first 10)
+
+    // Render the EJS file, passing blocks AND the necessary pagination info
+    // This data will be critical for the client-side lazy-loader.js
+    res.render('inspiration', {
+        pageTitle: data.title,
+        channelBlocks: data.blocks,
+        totalPages: data.totalPages, // Pass to client for lazy loading control
+        currentPage: data.currentPage, // Should be 1
+    });
+});
+
+
+// 🌟 NEW API ROUTE FOR LAZY LOADING 🌟
+// This route responds with pure JSON data, which the client-side JavaScript will use to append content.
+app.get('/api/blocks', async (req, res) => {
+    // The client will pass the next page number in the query string (e.g., /api/blocks?page=2)
+    const page = parseInt(req.query.page) || 1;
+    const per = 10; // Subsequent loads fetch 10 blocks at a time
+
+    const data = await fetchArenaBlocks(page, per);
+
+    // Send the blocks and the next page number back as JSON
+    res.json({
+        blocks: data.blocks,
+        currentPage: data.currentPage,
+        totalPages: data.totalPages,
+    });
+});
+// 🌟 END NEW API ROUTE 🌟
+
+
+app.get('/', (req, res) => {
+    res.render('index', {
+        pageTitle: 'PJ'
     });
 });
 
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
-    if (!ARENA_CHANNEL_SLUG) {
-        console.warn('⚠️ WARNING: ARENA_CHANNEL_SLUG is not set in your .env file!');
-    }
 });
