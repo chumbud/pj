@@ -712,6 +712,7 @@ a[href^="https://"]:hover:after {
 @media (min-width: 76.8rem) {
   .channel-content .channel-block img {
     width: unset;
+    height: 300px;
   }
 }
 
