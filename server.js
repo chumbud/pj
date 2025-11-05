@@ -23,20 +23,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function fetchArenaBlocks(page = 1, per = 20) {
     // API URL with dynamic pagination, sorting for newest first, and blocks per page
     // The direction=desc ensures the latest blocks are on page 1, 2, 3, etc.
-    const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
-
+const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
     try {
         const response = await axios.get(apiUrl);
-        // The API provides the total number of blocks (and therefore total pages) in the response metadata.
-        const totalBlocks = response.data.length || 0;
-        const totalPages = Math.ceil(totalBlocks / per);
+        // This 'length' property contains the total number of blocks in the channel.
+        const totalBlocksInChannel = response.data.length || 0; 
+        
+        // Calculate total pages based on the total channel length and the 'per' parameter
+        const totalPages = Math.ceil(totalBlocksInChannel / per);
 
         return {
-            blocks: response.data.contents || [],
+            blocks: response.data.contents || [], // This is the array of blocks for the current page
             title: response.data.title || 'Are.na Channel',
             currentPage: page,
             totalPages: totalPages,
-            // totalBlocks: totalBlocks // You could use this too if needed
         };
     } catch (error) {
         console.error(`Error fetching data for ${ARENA_CHANNEL_SLUG} (Page ${page}):`, error.message);
