@@ -672,7 +672,7 @@ a[href^="https://"]:hover:after {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.25rem;
 }
 .channel-content .channel-block {
   width: calc((100% - 2rem) / 3);
