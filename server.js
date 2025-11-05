@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
  * @param {number} per - The number of blocks per page (defaults to 10).
  * @returns {object} The response data including blocks, title, and pagination info.
  */
-async function fetchArenaBlocks(page = 1, per = 10) {
+async function fetchArenaBlocks(page = 1, per = 20) {
     // API URL with dynamic pagination, sorting for newest first, and blocks per page
     // The direction=desc ensures the latest blocks are on page 1, 2, 3, etc.
     const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
@@ -52,7 +52,7 @@ async function fetchArenaBlocks(page = 1, per = 10) {
 
 // 3. Define the main route: Initial Page Load (HTML + first 10 blocks)
 app.get('/likes', async (req, res) => {
-    const initialLoadCount = 10;
+    const initialLoadCount = 40;
     const data = await fetchArenaBlocks(1, initialLoadCount); // Fetch page 1 (first 10)
 
     // Render the EJS file, passing blocks AND the necessary pagination info
@@ -70,7 +70,7 @@ app.get('/likes', async (req, res) => {
 app.get('/api/blocks', async (req, res) => {
     // The client will pass the next page number in the query string (e.g., /api/blocks?page=2)
     const page = parseInt(req.query.page) || 1;
-    const per = 10; // Subsequent loads fetch 10 blocks at a time
+    const per = 20; // Subsequent loads fetch 10 blocks at a time
 
     const data = await fetchArenaBlocks(page, per);
 
