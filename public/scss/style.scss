@@ -391,7 +391,7 @@ a {
 }
 
 .ascii-art-container {
-    font-size: 1rem;
+    font-size: 1.5rem;
     line-height: 1; 
     color: #a0a0a0;
     z-index: 0;
@@ -650,10 +650,11 @@ a {
 .me {
     position: fixed;
     top: unset;
-    bottom: 0;
+    bottom: -6vw;
     left: unset;
-    right: 0px;
+    right: -25vw;
     z-index: 100;
+    scale: .75;
     transition: all .1s ease-in-out;
 
     @media (min-width: $breakpoint-tablet) {
@@ -661,10 +662,15 @@ a {
         right: 0;
         bottom: unset;
         left: unset;
+        scale: 1;
     }
 
     &:active, &:focus, &:focus-visible {
-        scale: 1.1;
+        scale: .85;
+
+        @media (min-width: $breakpoint-tablet) {
+            scale: 1.1;
+        }
     }
 
     .shadow {
@@ -877,5 +883,18 @@ a {
         letter-spacing: -1px;
         margin: 0;
         text-align: center;
+    }
+}
+
+.mobile-links {
+    font-size: 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+    justify-content: flex-start;
+    background-color: white;
+
+    @media (min-width: $breakpoint-tablet) {
+        display: none;
     }
 }

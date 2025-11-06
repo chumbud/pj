@@ -354,7 +354,7 @@ a[href^="https://"]:hover:after {
 }
 
 .ascii-art-container {
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1;
   color: #a0a0a0;
   z-index: 0;
@@ -614,10 +614,11 @@ a[href^="https://"]:hover:after {
 .me {
   position: fixed;
   top: unset;
-  bottom: 0;
+  bottom: -6vw;
   left: unset;
-  right: 0px;
+  right: -25vw;
   z-index: 100;
+  scale: 0.75;
   transition: all 0.1s ease-in-out;
 }
 @media (min-width: 76.8rem) {
@@ -626,10 +627,16 @@ a[href^="https://"]:hover:after {
     right: 0;
     bottom: unset;
     left: unset;
+    scale: 1;
   }
 }
 .me:active, .me:focus, .me:focus-visible {
-  scale: 1.1;
+  scale: 0.85;
+}
+@media (min-width: 76.8rem) {
+  .me:active, .me:focus, .me:focus-visible {
+    scale: 1.1;
+  }
 }
 .me .shadow {
   width: 120px;
@@ -842,6 +849,20 @@ a[href^="https://"]:hover:after {
   letter-spacing: -1px;
   margin: 0;
   text-align: center;
+}
+
+.mobile-links {
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  background-color: white;
+}
+@media (min-width: 76.8rem) {
+  .mobile-links {
+    display: none;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */
