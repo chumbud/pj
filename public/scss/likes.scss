@@ -1,0 +1,20 @@
+$breakpoint-tablet: 76.8rem;
+
+.me {
+    right: 0;
+    top: 10vw;
+    bottom: unset;
+    scale: .5;
+
+    &:active, &:hover, &:focus {
+        scale: .6;
+    }
+
+    @media (min-width: $breakpoint-tablet) {
+        scale: 1;
+
+        &:active, &:hover, &:focus {
+            scale: 1.1;
+        }
+    }
+}

@@ -39,6 +39,24 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.image-link').forEach(link => {
         link.addEventListener('click', handleImageClick);
     });
+
+    const lastUpdatedElement = document.getElementById('last-updated-date');
+    if (lastUpdatedElement) {
+        const isoString = lastUpdatedElement.dataset.timestamp;
+        const date = new Date(isoString);
+        
+        // Format the date for display (e.g., "Oct 26, 2025 at 10:30 PM")
+        const formattedDate = date.toLocaleDateString('en-US', {
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        
+        lastUpdatedElement.textContent = formattedDate;
+    }
 });
 
 /**
