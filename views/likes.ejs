@@ -28,6 +28,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/likes.css">
 </head>
 
 <body>
@@ -53,7 +54,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </ul>
     </section>
 <section class="arena-feed">
-    <div class="inspiration-about">Updated daily and retrieved from my are.na :) Curated likes from twitter, instagram, are.na, threads, and some personal posts. I follow a ton of artists and save their work for inspiration later. All sources linked. <br>(source feed: <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>)</div>
+    <div class="inspiration-about">
+        Automated feed of my curated likes from twitter, instagram, are.na, threads, and some personal posts. All sources linked.
+        <div class="stats">
+            <span class="total-blocks"><span class="label">Total likes:</span> <%= totalBlocks %></span>
+            <span class="likes-last-updated"><span class="label">Last updated:</span> <span id="last-updated-date" data-timestamp="<%= updatedAt %>">Loading Date...</span></span>
+            <span class="source"><span class="label">Source feed:</span> <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a></span>
+        </div>
+    </div>
+    <p></p>
     <div id="channel-content" class="channel-content">
         <% channelBlocks.forEach(block => { %>
             <div class="channel-block">

@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function fetchArenaBlocks(page = 1, per = 20) {
     // API URL with dynamic pagination, sorting for newest first, and blocks per page
     // The direction=desc ensures the latest blocks are on page 1, 2, 3, etc.
-const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
+    const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=created_at&direction=desc&per=${per}&page=${page}`;
     try {
         const response = await axios.get(apiUrl);
         // This 'length' property contains the total number of blocks in the channel.
@@ -37,6 +37,8 @@ const apiUrl = `https://api.are.na/v2/channels/${ARENA_CHANNEL_SLUG}?sort=create
             title: response.data.title || 'Are.na Channel',
             currentPage: page,
             totalPages: totalPages,
+            totalBlocks: totalBlocksInChannel,
+            updatedAt: response.data.updated_at,
         };
     } catch (error) {
         console.error(`Error fetching data for ${ARENA_CHANNEL_SLUG} (Page ${page}):`, error.message);
@@ -62,6 +64,8 @@ app.get('/likes', async (req, res) => {
         channelBlocks: data.blocks,
         totalPages: data.totalPages, // Pass to client for lazy loading control
         currentPage: data.currentPage, // Should be 1
+        totalBlocks: data.totalBlocks,
+        updatedAt: data.updatedAt,
     });
 });
 
