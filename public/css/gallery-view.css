@@ -13,6 +13,7 @@
   overflow: hidden;
   display: flex;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .image-area {
     height: auto;
@@ -24,8 +25,10 @@
 }
 .mineral-gallery-container .image-area #main-image {
   min-width: 100%;
+  -o-object-fit: cover;
   object-fit: cover;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .image-area #main-image {
     height: auto;
@@ -35,10 +38,12 @@
 .mineral-gallery-container #main-title {
   margin: 0;
 }
+
 .mineral-gallery-container #main-block-display {
   display: flex;
   flex-direction: column;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container #main-block-display {
     flex-direction: row;
@@ -49,6 +54,7 @@
   position: fixed;
   bottom: 0;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .bottom {
     position: static;
@@ -62,6 +68,7 @@
   max-width: 100vw;
   gap: 0.25rem;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container #channel-content {
     max-width: 100%;
@@ -72,9 +79,11 @@
 .mineral-gallery-container .details-area {
   margin-bottom: 4vh;
 }
+
 .mineral-gallery-container .details-area * {
-  color: black;
+  color: #000;
 }
+
 .mineral-gallery-container .channel-block-thumbnail {
   width: 100px;
   min-width: 100px;
@@ -84,6 +93,7 @@
   justify-content: center;
   overflow: hidden;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .channel-block-thumbnail {
     width: 200px;
@@ -98,17 +108,26 @@
   justify-content: center;
   align-items: center;
 }
+
 .mineral-gallery-container .channel-block-thumbnail .gallery-thumbnail-link img {
   height: 60%;
+}
+
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container .channel-block-thumbnail .gallery-thumbnail-link img {
+    height: auto;
+  }
 }
 .mineral-gallery-container #main-title {
   font-size: 6rem;
   line-height: 1.1;
 }
+
 .mineral-gallery-container #main-description {
   font-size: 2rem;
-  background-color: white;
+  background-color: #fff;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container #main-description {
     font-size: 3rem;
@@ -119,6 +138,7 @@
   height: 30vh;
   font-size: 3rem;
 }
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container #loading-placeholder {
     width: 500px;
