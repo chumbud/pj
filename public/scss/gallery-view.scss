@@ -94,6 +94,17 @@ $breakpoint-tablet: 76.8rem;
             min-width: 200px;
             height: 200px;
         }
+        .gallery-thumbnail-link {
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            img {
+                height: 60%;
+            }
+        }
     }
     #main-title {
         font-size: 6rem;
