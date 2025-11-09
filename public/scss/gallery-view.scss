@@ -82,13 +82,18 @@ $breakpoint-tablet: 76.8rem;
     }
 
     .channel-block-thumbnail {
-        width: 200px;
-        min-width: 200px;
-        height: 200px;
+        width: 100px;
+        min-width: 100px;
+        height: 100px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        @media (min-width: $breakpoint-tablet) {
+            width: 200px;
+            min-width: 200px;
+            height: 200px;
+        }
     }
     #main-title {
         font-size: 6rem;

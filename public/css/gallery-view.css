@@ -76,13 +76,20 @@
   color: black;
 }
 .mineral-gallery-container .channel-block-thumbnail {
-  width: 200px;
-  min-width: 200px;
-  height: 200px;
+  width: 100px;
+  min-width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container .channel-block-thumbnail {
+    width: 200px;
+    min-width: 200px;
+    height: 200px;
+  }
 }
 .mineral-gallery-container #main-title {
   font-size: 6rem;
