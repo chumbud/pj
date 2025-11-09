@@ -74,42 +74,44 @@
                     <div id="loading-placeholder" class="loading-placeholder">Loading Image...</div>
                     <img id="main-image" src="" alt="Selected Mineral Image">
                 </div>
+                <div class="details-area mobile">
+                    <h2 id="main-title" class="image-title main-title-text"></h2>
+                    <div id="main-description" class="block-description main-description-text"></div>
+                    <div id="special-details-area" class="special-details-area"></div>
+                </div>
                 <div class="bottom">
-                    <div class="details-area">
-                        <h2 id="main-title" class="image-title"></h2>
-                        <div id="main-description" class="block-description"></div>
+                    <div class="details-area desktop">
+                        <h2 id="main-title" class="image-title main-title-text"></h2>
+                        <div id="main-description" class="block-description main-description-text"></div>
+                        <div id="special-details-area" class="special-details-area"></div>
                     </div>
-                    <div id="channel-content" class="thumbnail-strip">
+                    <div id="channel-content" class="scroll-snap-type">
+                        <div id="channel-slug" data-value="<%= channelBlocks[0].channel_slug %>" style="display: none;"></div>
+                        <div id="total-pages" data-value="<%= totalPages %>" style="display: none;"></div>
+                        <div id="current-page" data-value="<%= currentPage %>" style="display: none;"></div>
+                        <div id="last-updated-date" data-timestamp="<%= updatedAt %>" style="display: none;"></div>
 
-                        <% channelBlocks.forEach((block, index)=> { %>
-                            <% if (block.image && block.image.thumb) { %>
-                                <div class="channel-block-thumbnail">
-
-                                    <a href="javascript:void(0);" class="gallery-thumbnail-link"
-                                        data-index="<%= index %>" data-original-url="<%= block.image.original.url %>"
-                                        data-thumb-url="<%= 
-                        
-                                    block.image.thumb.url %>" data-title="<%= block.title ||
-                                    'Are.na Image Block' %>"
-                                        data-content='<%- JSON.stringify(block.description || '') %>'>
-                                        <img src="<%= block.image.thumb.url %>" alt="<%= block.title ||
-                                    'Are.na Image Block' %>"
-                                            onerror="this.onerror=null;this.src='https://placehold.co/100x75?text=Error'">
-                                    </a>
-
-
-                                </div>
-                                <% } %>
-                                    <% });%>
+                        <% channelBlocks.forEach(function(block) { %>
+                            <div class="channel-block-thumbnail">
+                                <a href="javascript:void(0);" 
+                                class="gallery-thumbnail-link" 
+                                data-original-url="<%= block.image.original.url %>"
+                                data-thumb-url="<%= block.image.thumb.url %>"
+                                data-title="<%= block.title %>"
+                                data-content="<%- encodeURIComponent(JSON.stringify(block.description)) %>"
+                                >
+                                    <img src="<%= block.image.thumb.url %>" alt="<%= block.title %>" onerror="this.onerror=null; this.src='https://placehold.co/100x75?text=Error';">
+                                </a>
+                            </div>
+                        <% }); %>
+                        <div id="loading-spinner" style="display: none;">Loading...</div>
                     </div>
                 </div>
             </div>
             <div id="channel-slug" data-value="my-rock-collection" style="display:none;"></div>
             <a class="back-button" href="/">back</a>
             <div id="loading-spinner" style="text-align: center; padding: 20px;
-font-weight: bold;">Loading more blocks...</div>
-            <div id="current-page" data-value="<%= currentPage %>" style="display:none;"></div>
-            <div id="total-pages" data-value="<%= totalPages %>" style="display:none;"></div>
+font-weight: bold;"></div>
     </section>
     <section class="right-decor">
         <div class="ascii-art-container">

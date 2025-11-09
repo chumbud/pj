@@ -65,6 +65,7 @@ $breakpoint-tablet: 76.8rem;
         width: 100%;
         max-width: 100vw;
         gap: .25rem;
+        padding-right: 150px;
 
         @media (min-width: $breakpoint-tablet) {
             max-width: 100%;
@@ -119,9 +120,12 @@ $breakpoint-tablet: 76.8rem;
     }
     #main-description {
         font-size: 2rem;
-        background-color: white;
+        letter-spacing: -.5px;
+        background-color: rgba(white, .85);
         @media (min-width: $breakpoint-tablet) {
             font-size: 3rem;
+            letter-spacing: -2px;
+            max-width: 60%;
         }
     }
     #loading-placeholder {
@@ -133,4 +137,24 @@ $breakpoint-tablet: 76.8rem;
             height: 500px;
         }
     }
+    #special-details-area {
+        .styled-info-box {
+            background-color: rgba(white, .85);
+            font-size: 2rem;
+            letter-spacing: -.5px;
+            margin-top: 1rem;
+            padding-bottom: 100px;
+            padding-right: 3rem;
+
+            @media (min-width: $breakpoint-tablet) {
+                padding-right: 0;
+                padding-bottom: 0;
+            }
+        }
+    }
+}
+
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
 }

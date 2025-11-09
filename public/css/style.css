@@ -936,5 +936,23 @@ a[href^="https://"]:hover:after {
     display: none;
   }
 }
+.mobile {
+  display: block;
+}
+
+@media (min-width: 76.8rem) {
+  .mobile {
+    display: none;
+  }
+}
+.desktop {
+  display: none;
+}
+
+@media (min-width: 76.8rem) {
+  .desktop {
+    display: block;
+  }
+}
 
 /*# sourceMappingURL=style.css.map */

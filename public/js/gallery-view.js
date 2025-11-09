@@ -12,17 +12,46 @@ let totalPages = 1;
 let isFetching = false; // Flag to prevent multiple concurrent fetches
 
 // Global variable for the scrollable content container
-let mainScrollContent; // ADDED: Global variable for the scrollable container
+let mainScrollContent;
+
+// ----------------------------------------------------------------------
+// CORE UTILITIES & HELPER FUNCTIONS
+// ----------------------------------------------------------------------
+
+/**
+ * Basic Sanitizer: Strips all HTML tags except for those you explicitly allow (<br>).
+ * It prevents Cross-Site Scripting (XSS) by using textContent for stripping.
+ * @param {string} html - The unsanitized string containing <br> tags.
+ */
+function sanitizeText(html) {
+    // 1. Replace all <br> tags with a unique placeholder string
+    let protectedHtml = html.replace(/<br>/gi, '___BR_TAG___');
+    
+    // 2. Use a temporary div to strip ALL other HTML tags.
+    // By setting textContent, the browser automatically escapes/strips all tags.
+    let tempDiv = document.createElement('div');
+    tempDiv.textContent = protectedHtml; 
+    
+    // 3. Convert the placeholder back to safe <br> tags and return.
+    return tempDiv.textContent.replace(/___BR_TAG___/g, '<br>');
+}
+
 
 // Helper function to centralize error/fallback display logic
 function displayFallbackMessage(title, description) {
-    const mainTitle = document.getElementById('main-title');
-    const mainDescription = document.getElementById('main-description');
-    const mainPlaceholder = document.getElementById('loading-placeholder');
-    const mainImage = document.getElementById('main-image');
+    // FIX: Select all elements with the new classes
+    const mainTitles = document.querySelectorAll('.main-title-text');
+    const mainDescriptions = document.querySelectorAll('.main-description-text');
+    const mainImage = document.getElementById('main-image'); // Unique ID for the main image
+    const mainPlaceholder = document.getElementById('loading-placeholder'); // Unique ID for the placeholder
 
-    if (mainTitle) mainTitle.textContent = title;
-    if (mainDescription) mainDescription.innerHTML = description;
+    // Update all matching titles and descriptions
+    mainTitles.forEach(el => {
+        el.textContent = title;
+    });
+    mainDescriptions.forEach(el => {
+        el.innerHTML = description;
+    });
     
     // Clear image elements
     if (mainImage) {
@@ -37,6 +66,132 @@ function displayFallbackMessage(title, description) {
 }
 
 
+/**
+ * Updates the main display area with the details of the clicked block.
+ * @param {HTMLElement} linkElement - The thumbnail anchor element that was clicked.
+ */
+
+function displayBlockDetails(linkElement) {
+    const originalUrl = linkElement.dataset.originalUrl;
+    const title = linkElement.dataset.title;
+    const rawJsonContent = linkElement.dataset.content || '""'; 
+    
+    let contentToRender = "";
+    
+    // FIX: Use querySelectorAll to select ALL elements with these new classes
+    const mainTitles = document.querySelectorAll('.main-title-text');
+    const mainDescriptions = document.querySelectorAll('.main-description-text');
+    const specialDetailsContainers = document.querySelectorAll('.special-details-area');
+    
+    // Image and placeholder remain as IDs (assuming they are unique)
+    const mainImage = document.getElementById('main-image');
+    const mainPlaceholder = document.getElementById('loading-placeholder');
+
+    // Clear all special details areas
+    specialDetailsContainers.forEach(container => {
+        container.innerHTML = '';
+    });
+
+// --- Content Parsing ---
+    try {
+        const decodedJsonContent = decodeURIComponent(rawJsonContent);
+
+        // Parse the JSON string from the data-attribute
+        contentToRender = JSON.parse(decodedJsonContent); 
+        
+        if (contentToRender === null || contentToRender === "") {
+             contentToRender = "No description provided for this mineral.";
+        }
+    } catch (e) {
+        console.error("CRITICAL ERROR: JSON.parse failed on data-content. The raw content was:", rawJsonContent, e);
+        displayFallbackMessage(title, "Error loading block content. Check console for details.");
+        return; 
+    }
+    
+    let finalHtmlContent = String(contentToRender || '').trim();
+    let mainDescriptionHtml = finalHtmlContent;
+    let specialDetailsHtml = '';
+    
+    const delimiter = "\nBLURB:"; 
+    const delimiterIndex = finalHtmlContent.indexOf(delimiter);
+
+    if (delimiterIndex !== -1) {
+        mainDescriptionHtml = finalHtmlContent.substring(0, delimiterIndex).trim();
+        specialDetailsHtml = finalHtmlContent.substring(delimiterIndex + delimiter.length).trim();
+    }
+
+    mainDescriptionHtml = mainDescriptionHtml.replace(/\n/g, '<br>');
+    specialDetailsHtml = specialDetailsHtml.replace(/\n/g, '<br>');
+
+    const safeMainDescriptionHtml = sanitizeText(mainDescriptionHtml);
+    const safeSpecialDetailsHtml = sanitizeText(specialDetailsHtml);
+    
+    // 4. Update ALL matching Titles and Descriptions
+    mainTitles.forEach(el => {
+        el.textContent = title;
+    });
+    
+    mainDescriptions.forEach(el => {
+        el.innerHTML = safeMainDescriptionHtml;
+    });
+    
+    // 5. Render the special details content in ALL matching containers
+    specialDetailsContainers.forEach(container => {
+        // Clear container content first
+        container.innerHTML = '';
+        if (safeSpecialDetailsHtml) {
+             container.innerHTML = `<div class="styled-info-box">${safeSpecialDetailsHtml}</div>`;
+        }
+    });
+
+    // 6. Update the main image
+    if (mainImage && mainPlaceholder) {
+        mainImage.style.display = 'none'; // Hide image while loading
+        mainPlaceholder.style.display = 'flex'; // Show placeholder
+
+        // Set the new image source (full resolution image)
+        mainImage.src = originalUrl;
+    
+        // When the image loads, hide the placeholder and show the image
+        mainImage.onload = () => {
+            mainPlaceholder.style.display = 'none';
+            mainImage.style.display = 'block';
+        };
+    
+        // If image loading fails, show an error message in the placeholder
+        mainImage.onerror = () => {
+            mainPlaceholder.textContent = "Image failed to load.";
+            mainPlaceholder.style.display = 'flex';
+            mainImage.style.display = 'none';
+        };
+    }
+}
+
+/**
+ * Handles the click event on a thumbnail.
+ * @param {Event} event - The click event.
+ */
+function handleThumbnailClick(event) {
+    event.preventDefault();
+
+    // 1. Remove 'selected' class from the currently active thumbnail
+    const currentlySelected = document.querySelector('.selected-thumbnail');
+    if (currentlySelected) {
+        currentlySelected.classList.remove('selected-thumbnail');
+    }
+
+    // 2. Add 'selected' class to the clicked thumbnail
+    const linkElement = event.currentTarget;
+    linkElement.classList.add('selected-thumbnail');
+
+    // 3. Update the main display area
+    displayBlockDetails(linkElement);
+}
+
+// ----------------------------------------------------------------------
+// INITIALIZATION & LAZY LOADING LOGIC
+// ----------------------------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Retrieve pagination metadata
     const totalPagesElement = document.getElementById('total-pages');
@@ -47,10 +202,11 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPage = parseInt(currentPageElement.dataset.value);
     } else {
         console.error('Lazy loading metadata not found.');
-        displayFallbackMessage("Initialization Error", "Metadata elements not found.");
-        return;
     }
 
+    // Get the main scrollable container
+    mainScrollContent = document.getElementById('main-scroll-content');
+    
     // 2. Format the last updated date
     const lastUpdatedElement = document.getElementById('last-updated-date');
     if (lastUpdatedElement) {
@@ -67,168 +223,78 @@ document.addEventListener('DOMContentLoaded', () => {
         lastUpdatedElement.textContent = formattedDate;
     }
 
-    // 3. Attach thumbnail click listeners
+    // 3. Attach click listeners to all existing thumbnails
     const thumbnails = document.querySelectorAll('.gallery-thumbnail-link');
     thumbnails.forEach(link => {
         link.addEventListener('click', handleThumbnailClick);
     });
 
-    // 4. Set the first block as the default selected item, with error resilience
+    // 4. Display the first block on load
     if (thumbnails.length > 0) {
         try {
-            displayBlockDetails(thumbnails[0]);
+            // Display the first block details
+            displayBlockDetails(thumbnails[0]); 
             thumbnails[0].classList.add('selected-thumbnail');
         } catch (e) {
             console.error("CRITICAL ERROR: Failed to display the first block.", e);
-            displayFallbackMessage("Critical Error Loading Block", "The first mineral's data is corrupted or the display failed. Try clicking a different thumbnail.");
+            displayFallbackMessage("Critical Error Loading Block", "The first mineral's data is corrupted or the display failed. Check console."); 
         }
     } else {
-        // Fallback display if no thumbnails were rendered
-        displayFallbackMessage("No Image Blocks Available", "The channel either contains no images on the first page, or there was an error loading the initial content.");
-    }
-    
-    // 5. FIND AND ATTACH SCROLL LISTENER TO THE NEW CONTAINER
-    mainScrollContent = document.getElementById('main-scroll-content');
-    if (mainScrollContent) {
-        // We now listen for scroll events on the specific element, not the window
-        mainScrollContent.addEventListener('scroll', handleScroll); // CHANGED: Listen on the element
-    } else {
-        console.error('CRITICAL ERROR: #main-scroll-content element not found. Vertical scroll and sync will fail.');
+        displayFallbackMessage("No Blocks Found", "This Are.na channel appears to be empty.");
     }
 
-    // Initial display check - if page 1 is the only page, stop loader.
+    // 5. Setup Infinite Scroll Listener
     const loader = document.getElementById('loading-spinner');
     if (currentPage >= totalPages) {
-        loader.textContent = "";
+        if (loader) loader.textContent = "";
+    } else {
+        // Attach the scroll listener to the specific container
+        if (mainScrollContent) {
+            mainScrollContent.addEventListener('scroll', handleScroll);
+        } else {
+            console.error("Scroll container #main-scroll-content not found for lazy loading.");
+        }
     }
 });
 
-/**
- * Updates the main display area with the details of the clicked block.
- * @param {HTMLElement} linkElement - The thumbnail anchor element that was clicked.
- */
-function displayBlockDetails(linkElement) {
-    const originalUrl = linkElement.dataset.originalUrl;
-    const title = linkElement.dataset.title;
-    // Store the raw content string from the data attribute
-    const rawContent = linkElement.dataset.content || '""';
-    
-    let contentToRender = "";
-    const mainImage = document.getElementById('main-image');
-    const mainTitle = document.getElementById('main-title');
-    const mainDescription = document.getElementById('main-description');
-    const mainPlaceholder = document.getElementById('loading-placeholder');
-
-    // 1. Attempt to parse the JSON content
-    try {
-        // Use JSON.parse to safely decode the data-content attribute
-        contentToRender = JSON.parse(rawContent);
-        // If content is empty after parsing, provide a helpful default
-        if (contentToRender === null || contentToRender === "") {
-             contentToRender = "<p><em>No description provided for this rock.</em></p>";
-        }
-    } catch (e) {
-        console.error("JSON.parse failed on data-content. Raw content:", rawContent, e);
-        // Diagnostic Fallback: If JSON.parse fails, use the raw data content.
-        contentToRender = "<strong>DEBUG: PARSE FAILED.</strong> Raw Data Attribute Content:<br>" + rawContent.replace(/^"|"$/g, '');
-    }
-
-    // 2. Format the content for HTML display
-    let finalHtmlContent = String(contentToRender || '');
-
-    // FIX: Convert newlines (\n) to <br> tags for proper HTML line breaks
-    finalHtmlContent = finalHtmlContent.replace(/\n/g, '<br>');
-
-
-    // 3. Update Title and Content
-    if (mainTitle) mainTitle.textContent = title;
-    if (mainDescription) mainDescription.innerHTML = finalHtmlContent; // Use innerHTML to render as HTML
-
-    // 4. Load Main Image with Placeholder
-    if (mainImage && mainPlaceholder && originalUrl) {
-        // Show Placeholder and clear previous image data
-        mainPlaceholder.style.display = 'flex';
-        mainPlaceholder.textContent = 'Loading Image...';
-        mainImage.style.display = 'none';
-        mainImage.src = '';
-
-        // Load the new image
-        mainImage.src = originalUrl;
-
-        mainImage.onload = () => {
-            mainPlaceholder.style.display = 'none'; // Hide placeholder
-            mainImage.style.display = 'block'; // Show loaded image
-        };
-
-        mainImage.onerror = () => {
-            mainPlaceholder.style.display = 'flex';
-            mainPlaceholder.textContent = 'Error Loading Image'; // Change placeholder text on error
-            mainImage.style.display = 'none'; // Keep image hidden
-        };
-    }
-
-    // 5. Update the 'selected' class on thumbnails
-    document.querySelectorAll('.gallery-thumbnail-link').forEach(link => {
-        link.classList.remove('selected-thumbnail');
-    });
-    linkElement.classList.add('selected-thumbnail');
-}
 
 /**
- * Handles the click event on a thumbnail to update the main display.
- * @param {Event} e - The click event object.
- */
-function handleThumbnailClick(e) {
-    const linkElement = e.target.closest('.gallery-thumbnail-link');
-    if (!linkElement) return;
-
-    e.preventDefault();
-    displayBlockDetails(linkElement);
-}
-
-/**
- * Renders newly fetched block thumbnails from the API.
- * @param {Array<Object>} blocks - Array of block objects from the API.
+ * Renders the new block elements fetched from the API and appends them to the container.
+ * @param {Array} blocks - An array of block objects from the Are.na API.
  */
 function renderBlocks(blocks) {
     const container = document.getElementById('channel-content');
     if (!container) return;
 
     const fragment = document.createDocumentFragment();
-    const newLinkElements = [];
-    let currentBlockIndex = container.children.length; // Start index for new blocks
+    const newLinkElements = []; // To store the new anchor elements for click listeners
 
     blocks.forEach(block => {
-        // We only want image blocks for the gallery view
+        // Only process image blocks with valid image data
         if (block.image && block.image.thumb) {
-            const blockDiv = document.createElement('div');
-            blockDiv.className = 'channel-block-thumbnail';
+            const div = document.createElement('div');
+            div.className = 'channel-block-thumbnail';
 
-            const link = document.createElement('a');
-            link.href = 'javascript:void(0);';
-            link.className = 'gallery-thumbnail-link';
+            const a = document.createElement('a');
+            a.href = "javascript:void(0);";
+            a.className = 'gallery-thumbnail-link';
+
+            a.dataset.originalUrl = block.image.original.url;
+            a.dataset.thumbUrl = block.image.thumb.url;
+            a.dataset.title = block.title || 'Are.na Image Block';
             
-            // NOTE: Must use block.description in EJS to get human-entered text
-            const content = JSON.stringify(block.description || ''); 
-
-            link.dataset.index = currentBlockIndex++;
-            link.dataset.originalUrl = block.image.original.url;
-            link.dataset.thumbUrl = block.image.thumb.url;
-            link.dataset.title = block.title || 'Are.na Image Block';
-            link.dataset.content = content; 
-
+            // FIX: Convert content to a JSON string, then URL-encode it for safe embedding
+            // into a data-attribute to prevent HTML/JSON string termination errors.
+            a.dataset.content = encodeURIComponent(JSON.stringify(block.description || ''));
             const img = document.createElement('img');
             img.src = block.image.thumb.url;
             img.alt = block.title || 'Are.na Image Block';
-            img.onerror = function() {
-                this.onerror = null;
-                this.src = 'https://placehold.co/100x75?text=Error';
-            };
+            img.onerror = function() { this.onerror = null; this.src = 'https://placehold.co/100x75?text=Error'; };
 
-            link.appendChild(img);
-            blockDiv.appendChild(link);
-            fragment.appendChild(blockDiv);
-            newLinkElements.push(link);
+            a.appendChild(img);
+            div.appendChild(a);
+            fragment.appendChild(div);
+            newLinkElements.push(a); 
         }
     });
 
@@ -239,6 +305,7 @@ function renderBlocks(blocks) {
         link.addEventListener('click', handleThumbnailClick);
     });
 }
+
 
 /**
  * Fetches the next page of blocks from the server API.
@@ -251,7 +318,8 @@ async function fetchMoreBlocks() {
     isFetching = true;
     currentPage += 1;
     const loader = document.getElementById('loading-spinner');
-    const channelSlug = document.getElementById('channel-slug').dataset.value;
+    const channelSlugElement = document.getElementById('channel-slug');
+    const channelSlug = channelSlugElement ? channelSlugElement.dataset.value : 'default-channel'; 
 
     loader.style.display = 'block';
     loader.textContent = "Loading more blocks...";
@@ -285,4 +353,63 @@ async function fetchMoreBlocks() {
             loader.style.display = 'none';
         }
     }
+}
+
+// ----------------------------------------------------------------------
+// SCROLL SYNC LOGIC
+// ----------------------------------------------------------------------
+
+/**
+ * Synchronizes the horizontal scroll of the thumbnail strip with the vertical scroll of the main content.
+ */
+function syncThumbnailScroll() {
+    if (!mainScrollContent) return;
+    
+    const thumbnailStrip = document.getElementById('channel-content');
+    if (!thumbnailStrip) return;
+
+    // 1. Get current vertical scroll position (scrollY) and total scrollable height (maxScrollY).
+    const scrollY = mainScrollContent.scrollTop;
+    const maxScrollY = mainScrollContent.scrollHeight - mainScrollContent.clientHeight;
+
+    // Handle case where content is not scrollable (maxScrollY is 0)
+    if (maxScrollY <= 0) {
+        return;
+    }
+
+    // 2. Calculate the vertical scroll progress as a percentage (0 to 1).
+    const scrollPercentage = scrollY / maxScrollY;
+
+    // 3. Calculate the maximum possible horizontal scroll distance for the strip.
+    const maxScrollX = thumbnailStrip.scrollWidth - thumbnailStrip.offsetWidth;
+    
+    if (maxScrollX <= 0) {
+        return;
+    }
+
+    // 4. Calculate the desired horizontal scroll position.
+    let scrollX = maxScrollX * scrollPercentage;
+    
+    // 5. Apply the calculated scroll position.
+    thumbnailStrip.scrollLeft = scrollX;
+}
+
+
+/**
+ * Checks if the user has scrolled near the bottom of the page (on the new container) 
+ * AND handles horizontal scroll.
+ */
+function handleScroll() {
+    if (!mainScrollContent) return; // Exit if the element is missing
+
+    const scrollThreshold = 300; // Load when user is 300px from the bottom
+
+    // 1. Handle Lazy Loading (using the element's scroll properties)
+    // clientHeight is the visible height. scrollTop is the current position. scrollHeight is total height.
+    if ((mainScrollContent.clientHeight + mainScrollContent.scrollTop + scrollThreshold) >= mainScrollContent.scrollHeight) {
+        fetchMoreBlocks();
+    }
+    
+    // 2. Handle Horizontal Scroll Sync
+    syncThumbnailScroll();
 }
