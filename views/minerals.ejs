@@ -28,6 +28,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/gallery-view.css">
+    <link rel="stylesheet" href="/css/likes.css">
     </head>
 
 <body>
@@ -70,49 +71,47 @@ style="display:none;visibility:hidden"></iframe></noscript>
             <div id="main-block-display" class="main-block-view">
                 <div class="image-area">
                     <div id="loading-placeholder" class="loading-placeholder">Loading Image...</div>
-                    <img id="main-image" src="" alt="Selected Mineral Image" class="full-image">
+                    <img id="main-image" src="" alt="Selected Mineral Image">
                 </div>
-    
-            <div class="details-area">
-                <h2 id="main-title" class="image-title"></h2>
-                   
-                <div id="main-description" class="block-description"></div>
+                
+            <div class="bottom">
+                <div class="details-area">
+                    <h2 id="main-title" class="image-title"></h2>
+                    <div id="main-description" class="block-description"></div>
+                </div>
+                <div id="channel-content" class="thumbnail-strip">
+
+                    <% channelBlocks.forEach((block, index) => { %>
+                        <% if (block.image && block.image.thumb) { %>
+                                <div class="channel-block-thumbnail">
+                
+                                    <a href="javascript:void(0);" 
+                                    
+                                    class="gallery-thumbnail-link" 
+                        
+                                    data-index="<%= index %>" 
+                                    data-original-url="<%= block.image.original.url %>"
+                                    data-thumb-url="<%= 
+                        
+                                    block.image.thumb.url %>"
+                                    data-title="<%= block.title ||
+                                    'Are.na Image Block' %>"
+                                    data-content='<%- JSON.stringify(block.description || '') %>'>
+                                        <img src="<%= block.image.thumb.url %>"
+                                
+        
+                                        alt="<%= block.title ||
+                                    'Are.na Image Block' %>"
+                                            onerror="this.onerror=null;this.src='https://placehold.co/100x75?text=Error'">
+                                    </a>
+                        
+                    
+                                </div>
+                            <% } %>
+                    <% });%>
                 </div>
             </div>
 
-   
-            <div id="channel-content" class="thumbnail-strip">
-                <% channelBlocks.forEach((block, index) => { %>
-            
-                <% if (block.image && block.image.thumb) { %>
-                        <div class="channel-block-thumbnail">
-         
-                            <a href="javascript:void(0);" 
-                               
-                               class="gallery-thumbnail-link" 
-                
-                               data-index="<%= index %>" 
-                               data-original-url="<%= block.image.original.url %>"
-                               data-thumb-url="<%= 
-                 
-                               block.image.thumb.url %>"
-                               data-title="<%= block.title ||
-                               'Are.na Image Block' %>"
-                               data-content='<%- JSON.stringify(block.description || '') %>'>
-                                <img src="<%= block.image.thumb.url %>"
-                         
- 
-                                alt="<%= block.title ||
-                               'Are.na Image Block' %>"
-                                     onerror="this.onerror=null;this.src='https://placehold.co/100x75?text=Error'">
-                            </a>
-                 
-               
-                        </div>
-                    <% } %>
-                <% });
-%>
-            </div>
         </div>
         <div id="channel-slug" data-value="my-rock-collection" style="display:none;"></div>
         <a class="back-button" href="/">back</a>
