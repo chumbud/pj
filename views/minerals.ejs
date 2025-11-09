@@ -2,11 +2,14 @@
 <html lang="en">
 
 <head>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-W5W3L42G');</script>
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-W5W3L42G');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PJ!</title>
@@ -15,8 +18,8 @@
     <meta name="author" content="PJ">
     <link rel="canonical" href="https://pj.codes/">
     <meta property="og:title" content="PJ! - Frontend Developer & Product Designer">
-  
-  <meta property="og:description"
+
+    <meta property="og:description"
         content="PJ - Frontend Developer & Product Designer based in Queens, NY, passionate about helping US public school teachers fundraise for classroom supplies.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pj.codes/">
@@ -29,14 +32,12 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/gallery-view.css">
     <link rel="stylesheet" href="/css/likes.css">
-    </head>
+</head>
 
 <body>
-<noscript><iframe 
-src="https://www.googletagmanager.com/ns.html?id=GTM-W5W3L42G"
-height="0" width="0" 
-style="display:none;visibility:hidden"></iframe></noscript>
-<div class="me">
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W5W3L42G" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <div class="me">
         <div id="animation-container"></div>
         <div class="shadow"></div>
     </div>
@@ -47,8 +48,7 @@ style="display:none;visibility:hidden"></iframe></noscript>
             <a class="current" href="/minerals">minerals</a>
         </ul>
         <ul class="bottom">
-    
-        <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
+            <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
             <a href="https://www.linkedin.com/in/pjrosa/" target="_blank">linkedin</a>
             <a href="https://discord.com/invite/srk3VVxt" target="_blank">discord </a>
             <a href="https://www.instagram.com/spoooji/" target="_blank">instagram </a>
@@ -57,70 +57,59 @@ style="display:none;visibility:hidden"></iframe></noscript>
     </section>
     <section class="arena-feed">
         <div class="inspiration-about">
-     
-        I'm a bit of a hobbyist mineral enthusiast, I like to document all the rocks I've collected!
-<div class="stats">
-                <span class="total-blocks"><span class="label">Total rocks:</span> <%= totalBlocks %></span>
-                <span class="likes-last-updated"><span class="label">Last updated:</span> <span id="last-updated-date" data-timestamp="<%= updatedAt %>">Loading Date...</span></span>
-                <span class="source"><span class="label">Source feed:</span> <a href="https://www.are.na/pj-rosa/my-rock-collection" target="_blank">are.na</a></span>
+            I'm into minerals and like to document all the one's I've collected!
+            <div class="stats">
+                <span class="total-blocks"><span class="label">Total rocks:</span>
+                    <%= totalBlocks %>
+                </span>
+                <span class="likes-last-updated"><span class="label">Last updated:</span> <span id="last-updated-date"
+                        data-timestamp="<%= updatedAt %>">Loading Date...</span></span>
+                <span class="source"><span class="label">Source feed:</span> <a
+                        href="https://www.are.na/pj-rosa/my-rock-collection" target="_blank">are.na</a></span>
             </div>
         </div>
-
         <div class="mineral-gallery-container">
- 
             <div id="main-block-display" class="main-block-view">
                 <div class="image-area">
                     <div id="loading-placeholder" class="loading-placeholder">Loading Image...</div>
                     <img id="main-image" src="" alt="Selected Mineral Image">
                 </div>
-                
-            <div class="bottom">
-                <div class="details-area">
-                    <h2 id="main-title" class="image-title"></h2>
-                    <div id="main-description" class="block-description"></div>
-                </div>
-                <div id="channel-content" class="thumbnail-strip">
+                <div class="bottom">
+                    <div class="details-area">
+                        <h2 id="main-title" class="image-title"></h2>
+                        <div id="main-description" class="block-description"></div>
+                    </div>
+                    <div id="channel-content" class="thumbnail-strip">
 
-                    <% channelBlocks.forEach((block, index) => { %>
-                        <% if (block.image && block.image.thumb) { %>
+                        <% channelBlocks.forEach((block, index)=> { %>
+                            <% if (block.image && block.image.thumb) { %>
                                 <div class="channel-block-thumbnail">
-                
-                                    <a href="javascript:void(0);" 
-                                    
-                                    class="gallery-thumbnail-link" 
+
+                                    <a href="javascript:void(0);" class="gallery-thumbnail-link"
+                                        data-index="<%= index %>" data-original-url="<%= block.image.original.url %>"
+                                        data-thumb-url="<%= 
                         
-                                    data-index="<%= index %>" 
-                                    data-original-url="<%= block.image.original.url %>"
-                                    data-thumb-url="<%= 
-                        
-                                    block.image.thumb.url %>"
-                                    data-title="<%= block.title ||
+                                    block.image.thumb.url %>" data-title="<%= block.title ||
                                     'Are.na Image Block' %>"
-                                    data-content='<%- JSON.stringify(block.description || '') %>'>
-                                        <img src="<%= block.image.thumb.url %>"
-                                
-        
-                                        alt="<%= block.title ||
+                                        data-content='<%- JSON.stringify(block.description || '') %>'>
+                                        <img src="<%= block.image.thumb.url %>" alt="<%= block.title ||
                                     'Are.na Image Block' %>"
                                             onerror="this.onerror=null;this.src='https://placehold.co/100x75?text=Error'">
                                     </a>
-                        
-                    
+
+
                                 </div>
-                            <% } %>
-                    <% });%>
+                                <% } %>
+                                    <% });%>
+                    </div>
                 </div>
             </div>
-
-        </div>
-        <div id="channel-slug" data-value="my-rock-collection" style="display:none;"></div>
-        <a class="back-button" href="/">back</a>
-        
-    
-        <div id="loading-spinner" style="text-align: center; padding: 20px;
+            <div id="channel-slug" data-value="my-rock-collection" style="display:none;"></div>
+            <a class="back-button" href="/">back</a>
+            <div id="loading-spinner" style="text-align: center; padding: 20px;
 font-weight: bold;">Loading more blocks...</div>
-        <div id="current-page" data-value="<%= currentPage %>" style="display:none;"></div>
-        <div id="total-pages" data-value="<%= totalPages %>" style="display:none;"></div>
+            <div id="current-page" data-value="<%= currentPage %>" style="display:none;"></div>
+            <div id="total-pages" data-value="<%= totalPages %>" style="display:none;"></div>
     </section>
     <section class="right-decor">
         <div class="ascii-art-container">
@@ -179,11 +168,12 @@ font-weight: bold;">Loading more blocks...</div>
 ⠀⠀⠀⠀⠀⠀⠀⠀⠘⣿⣄⠀⠀⣠⣾⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠛⠛⠛⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀</pre>
 
-      
+
         </div>
         <div class="faded-image" style="background-image: url('img/2.jpg');"></div>
     </section>
     <script type="module" src="/js/scrub.js"></script>
     <script type="module" src="/js/gallery-view.js"></script>
 </body>
+
 </html>

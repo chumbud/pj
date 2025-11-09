@@ -748,12 +748,15 @@ a[href^="https://"]:hover:after {
   right: 2rem;
   position: fixed;
   z-index: 1000;
-  font-size: 3rem;
 }
 @media (min-width: 76.8rem) {
   .mobile-feed-link {
     display: none;
   }
+}
+.mobile-feed-link a {
+  font-size: 3rem;
+  padding: 0 0.75rem;
 }
 
 .back-button {
