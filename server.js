@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function fetchArenaBlocks(page = 1, per = 20, apiUrlSlug) {
     // API URL with dynamic pagination, sorting for newest first, and blocks per page
     // The direction=desc ensures the latest blocks are on page 1, 2, 3, etc.
-    const apiUrl = `https://api.are.na/v2/channels/${apiUrlSlug}?sort=created_at&direction=desc&per=${per}&page=${page}`;
+    const apiUrl = `https://api.are.na/v2/channels/${apiUrlSlug}?&direction=desc&per=${per}&page=${page}`;
     try {
         const response = await axios.get(apiUrl);
         // This 'length' property contains the total number of blocks in the channel.
