@@ -1,0 +1,75 @@
+$breakpoint-tablet: 76.8rem;
+
+.mineral-gallery-container {
+    max-width: calc(100vw - 215px);
+
+    #main-image {
+        max-width: 500px;
+        height: 30vh;
+        @media (min-width: $breakpoint-tablet) {
+            height: auto;
+        }
+    }
+    #main-title {
+        margin: 0;
+    }
+
+    #main-block-display {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        @media (min-width: $breakpoint-tablet) {
+            flex-direction: row;
+        }
+    }
+    #channel-content {
+        display: flex;
+        flex-direction: row;
+        overflow-x: scroll;
+        width: 100%;
+        max-width: 100vw;
+        gap: .25rem;
+        position: fixed;
+        bottom: 0;
+
+        @media (min-width: $breakpoint-tablet) {
+            max-width: calc(100vw - 200px);
+        }
+    }
+
+    .details-area * {
+        color: black;
+    }
+
+    .channel-block-thumbnail {
+        width: 200px;
+        min-width: 200px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    #main-title {
+        font-size: 4rem;
+        @media (min-width: $breakpoint-tablet) {
+            font-size: 6rem;
+        }
+    }
+    #main-description {
+        font-size: 2rem;
+        @media (min-width: $breakpoint-tablet) {
+            font-size: 3rem;
+        }
+    }
+    #loading-placeholder {
+        width: 30vh;
+        height: 30vh;
+        font-size: 3rem;
+        @media (min-width: $breakpoint-tablet) {
+            width: 500px;
+            height: 500px;
+        }
+    }
+}
