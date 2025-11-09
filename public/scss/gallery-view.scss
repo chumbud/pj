@@ -103,6 +103,10 @@ $breakpoint-tablet: 76.8rem;
 
             img {
                 height: 60%;
+
+                @media (min-width: $breakpoint-tablet) {
+                    height: auto;
+                }
             }
         }
     }
