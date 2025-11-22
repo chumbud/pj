@@ -413,3 +413,10 @@ function handleScroll() {
     // 2. Handle Horizontal Scroll Sync
     syncThumbnailScroll();
 }
+
+document.addEventListener('click', function (e) {
+    const link = e.target.closest('.gallery-thumbnail-link');
+    if (!link) return;
+    // Option A: scroll the whole window to top (smooth)
+    window.scrollTo({ top: 0, behavior: 'auto' });
+});

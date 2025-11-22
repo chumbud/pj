@@ -50,27 +50,20 @@ $breakpoint-tablet: 76.8rem;
         }
     }
 
-    .bottom {
-        position: fixed;
-        bottom: 0;
-        @media (min-width: $breakpoint-tablet) {
-            position: static;
-        }
-    }
-
     #channel-content {
         display: flex;
         flex-direction: row;
-        overflow-x: scroll;
+        flex-wrap: wrap;
         width: 100%;
-        max-width: 100vw;
-        gap: .25rem;
-        padding-right: 150px;
+        justify-content: space-between;
+        padding-bottom: 200px;
 
         @media (min-width: $breakpoint-tablet) {
             max-width: 100%;
-            flex-wrap: wrap;
             overflow-x: auto;
+            gap: .25rem;
+            padding-bottom: unset;
+            justify-content: unset;
         }
     }
 
@@ -83,18 +76,22 @@ $breakpoint-tablet: 76.8rem;
     }
 
     .channel-block-thumbnail {
-        width: 100px;
-        min-width: 100px;
+        width: calc(100% / 4 - .25rem);
+        min-width: calc(100% / 4 - .25rem);
         height: 100px;
+        margin-bottom: .25rem;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+
         @media (min-width: $breakpoint-tablet) {
             width: 200px;
             min-width: 200px;
+            margin-bottom: 0px;
             height: 200px;
         }
+
         .gallery-thumbnail-link {
             width: 300px;
             height: 300px;
