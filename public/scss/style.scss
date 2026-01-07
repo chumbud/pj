@@ -4,6 +4,7 @@ $color-magenta: #ff00ff;
 
 $breakpoint-tablet: 76.8rem;
 $breakpoint-big: 144rem;
+$nav-width: 24rem;
 
 html {
     font-size: 2vw;
@@ -28,7 +29,7 @@ body {
     display: flex;
 
     @media (min-width: $breakpoint-tablet) {
-        margin-left: 200px;
+
     }
 }
 
@@ -99,7 +100,14 @@ a {
     @media (min-width: $breakpoint-tablet) {
         flex-direction: row; 
         justify-content: space-between;
-        padding: 4.0rem; 
+        padding: 4.0rem;
+    }
+}
+
+.nav + section,
+.nav + main {
+    @media (min-width: $breakpoint-tablet) {
+        margin-left: $nav-width;
     }
 }
 
@@ -324,6 +332,13 @@ a {
 }
 
 .arena-feed {
+    position: relative;
+    padding-bottom: 8rem;
+
+    @media (min-width: $breakpoint-tablet) {
+        padding-bottom: 10rem;
+    }
+
     & + .right-decor {
         z-index: -1;
     }
@@ -568,12 +583,14 @@ a {
     position: fixed;
     left: 0;
     height: 100%;
+    width: fit-content;
     top: 0;
     z-index: 100;
     background-color: white;
 
     @media (min-width: $breakpoint-tablet) {
         display: flex;
+        width: $nav-width;
     }
 
 
@@ -588,7 +605,7 @@ a {
         color: black;
         text-decoration: none;
         padding: .5rem 1rem;
-        width: 200px;
+        width: 100%;
         text-align: right;
 
         &.current {
@@ -612,10 +629,24 @@ a {
     }
 
     .top {
-        margin-top: 2rem;
+        display: flex;
+        padding: 1rem;
 
         a {
+            font-size: 3.25rem;
+            text-align: center;
+            border-radius: 1rem;
+            margin: 1rem 0rem 0rem 0rem;
+            padding: 1rem 2rem;
+            background-color: rgba(black, .05);
+
+            &.current {
+                background-color: rgba($color-magenta, .1);
+            }
+
             &:hover {
+                background-color: rgba($color-magenta, .1);
+                color: $color-magenta;
                 &::after {
                     content: none;
                 }
@@ -733,6 +764,17 @@ a {
     }
 }
 
+@keyframes thumbnailFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .channel-content {
     display: flex;
     flex-direction: row;
@@ -743,6 +785,10 @@ a {
         width: calc((100% - .5rem) / 3);
         height: 19vh;
         overflow: hidden;
+        opacity: 0;
+        animation: thumbnailFadeIn 0.25s cubic-bezier(0.2, 0, 0.1, 1) forwards;
+        animation-delay: calc(var(--i, 0) * 0.03s);
+
         @media (min-width: $breakpoint-tablet) {
             width: unset;
             height: unset;
@@ -777,6 +823,160 @@ a {
                 height: 300px;
             }
         }
+    }
+}
+
+.arena-feed.thumbnails-small {
+    .channel-content {
+        .channel-block {
+            @media (min-width: $breakpoint-tablet) {
+                img {
+                    height: 150px;
+                }
+            }
+        }
+    }
+}
+
+.arena-feed.thumbnails-grid {
+    @media (min-width: $breakpoint-tablet) {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .channel-content {
+        @media (min-width: $breakpoint-tablet) {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: .5rem;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .channel-block {
+            @media (min-width: $breakpoint-tablet) {
+                width: 100%;
+                aspect-ratio: 1 / 1;
+                overflow: hidden;
+                display: flex;
+                
+                .image-link {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    flex-shrink: 0;
+                }
+            }
+        }
+    }
+
+    // When both grid and small are active
+    &.thumbnails-small {
+        .channel-content {
+            @media (min-width: $breakpoint-tablet) {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    }
+}
+
+.thumbnail-toggle-btn,
+.thumbnail-grid-btn {
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    z-index: 1000;
+    background-color: white;
+    color: black;
+    padding: 0.75rem;
+    border-radius: 3rem;
+    font-size: 1.5rem;
+    border: none;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    font-family: "Funnel Sans", sans-serif;
+    width: 15rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    @media (min-width: $breakpoint-tablet) {
+        display: flex;
+    }
+
+    .option {
+        flex: 1;
+        padding: 0.5rem 0.75rem;
+        border-radius: 3rem;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
+        position: relative;
+        z-index: 1;
+
+        &.active {
+            background-color: rgba($color-magenta, .1);
+            color: $color-magenta;
+            font-weight: 500;
+        }
+    }
+
+    &:hover {
+        color: $color-magenta;
+    }
+}
+
+.thumbnail-toggle-btn {
+    left: 50%;
+    transform: translateX(calc(-150% - 1rem));
+
+    @media (min-width: $breakpoint-tablet) {
+        left: calc(50% + ($nav-width / 2));
+    }
+}
+
+.thumbnail-grid-btn {
+    left: 50%;
+    transform: translateX(-50%);
+
+    @media (min-width: $breakpoint-tablet) {
+        left: calc(50% + ($nav-width / 2));
+    }
+}
+
+.scroll-top-btn {
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    background-color: white;
+    color: black;
+    padding: 1.25rem 2rem;
+    border-radius: 3rem;
+    font-size: 1.5rem;
+    text-align: right;
+    border: none;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    font-family: "Funnel Sans", sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    @media (min-width: $breakpoint-tablet) {
+        display: block;
+    }
+
+    &:hover {
+        color: $color-magenta;
     }
 }
 

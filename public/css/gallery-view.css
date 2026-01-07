@@ -77,6 +77,9 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  opacity: 0;
+  animation: thumbnailFadeIn 0.25s cubic-bezier(0.2, 0, 0.1, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 0.03s);
 }
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .channel-block-thumbnail {
@@ -99,6 +102,62 @@
 @media (min-width: 76.8rem) {
   .mineral-gallery-container .channel-block-thumbnail .gallery-thumbnail-link img {
     height: auto;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-small #channel-content .channel-block-thumbnail {
+    width: 100px;
+    min-width: 100px;
+    height: 100px;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid #channel-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.5rem;
+    overflow-x: visible;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid #channel-content .channel-block-thumbnail {
+    width: 100%;
+    min-width: unset;
+    aspect-ratio: 1/1;
+    margin-bottom: 0;
+    display: flex;
+    overflow: hidden;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid #channel-content .channel-block-thumbnail .gallery-thumbnail-link {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid #channel-content .channel-block-thumbnail .gallery-thumbnail-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mineral-gallery-container.thumbnails-grid.thumbnails-small #channel-content {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }
 .mineral-gallery-container #main-title {

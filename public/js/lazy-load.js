@@ -180,6 +180,7 @@ function renderBlocks(blocks) {
     // Use a DocumentFragment for efficient DOM insertion
     const fragment = document.createDocumentFragment();
     const newLinkElements = []; // Store new link elements for listener attachment
+    const newBlockDivs = []; // Store new block divs for animation delay
 
     blocks.forEach(block => {
         if (block.image && block.image.original) {
@@ -210,8 +211,9 @@ function renderBlocks(blocks) {
             blockDiv.appendChild(link);
             fragment.appendChild(blockDiv);
 
-            // Keep track of the new link element
+            // Keep track of the new link element and block div
             newLinkElements.push(link);
+            newBlockDivs.push(blockDiv);
 
         } else if (block.content) {
             const blockDiv = document.createElement('div');
@@ -221,7 +223,13 @@ function renderBlocks(blocks) {
             contentDiv.innerHTML = block.content;
             blockDiv.appendChild(contentDiv);
             fragment.appendChild(blockDiv);
+            newBlockDivs.push(blockDiv);
         }
+    });
+
+    // Set staggered animation delays on new blocks
+    newBlockDivs.forEach((blockDiv, index) => {
+        blockDiv.style.setProperty('--i', index);
     });
 
     // Append all new blocks to the container at once
