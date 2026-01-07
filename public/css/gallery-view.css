@@ -2,6 +2,12 @@
   position: absolute;
 }
 
+.thumbnail-toggle-btn,
+.thumbnail-grid-btn,
+.scroll-top-btn {
+  display: none !important;
+}
+
 @media (min-width: 76.8rem) {
   .mineral-gallery-container {
     max-width: calc(100vw - 215px);

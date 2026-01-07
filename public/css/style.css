@@ -53,6 +53,22 @@ a {
   text-underline-offset: 2px;
   text-underline-position: from-font;
 }
+a[href^="https://"] {
+  position: relative;
+}
+a[href^="https://"]::before {
+  content: url("../img/wave-bye.gif");
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%) translateY(5px) scale(0.375);
+  transform-origin: center bottom;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.25, 0.64, 1);
+  pointer-events: none;
+  margin-bottom: 0.25rem;
+  image-rendering: pixelated;
+}
 a[href^="https://"]:after {
   content: url("../img/pink.svg");
   width: 1rem;
@@ -63,6 +79,10 @@ a[href^="https://"]:after {
 a[href^="https://"]:hover {
   background-color: #ff00ff;
   color: #fff;
+}
+a[href^="https://"]:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(0.375);
 }
 a[href^="https://"]:hover:after {
   content: url("../img/white.svg");
@@ -620,6 +640,10 @@ a[href^="https://"]:hover:after {
 }
 .nav .bottom {
   margin-bottom: 2rem;
+  align-items: flex-end;
+}
+.nav .bottom a {
+  width: fit-content;
 }
 
 #animation-container {
@@ -832,27 +856,35 @@ a[href^="https://"]:hover:after {
   }
 }
 
+.thumbnail-toggle-btn .option,
+.thumbnail-grid-btn .option {
+  letter-spacing: -1px;
+}
+.thumbnail-toggle-btn .option:hover,
+.thumbnail-grid-btn .option:hover {
+  text-decoration: underline;
+}
+
 .thumbnail-toggle-btn,
 .thumbnail-grid-btn {
   display: none;
   position: fixed;
   bottom: 2rem;
   z-index: 1000;
-  background-color: white;
-  color: black;
+  background-color: #ff00ff;
+  color: white;
   padding: 0.75rem;
   border-radius: 3rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
   font-family: "Funnel Sans", sans-serif;
   width: 15rem;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 @media (min-width: 76.8rem) {
   .thumbnail-toggle-btn,
@@ -860,25 +892,53 @@ a[href^="https://"]:hover:after {
     display: flex;
   }
 }
+.thumbnail-toggle-btn::before,
+.thumbnail-grid-btn::before {
+  content: "";
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: calc(50% - 0.75rem);
+  height: calc(100% - 1.5rem);
+  background-color: white;
+  border-radius: 3rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.25, 0.64, 1);
+  z-index: 0;
+}
+.thumbnail-toggle-btn:hover::before,
+.thumbnail-grid-btn:hover::before {
+  transform: translateX(6px);
+}
+.thumbnail-toggle-btn.active-right::before,
+.thumbnail-grid-btn.active-right::before {
+  transform: translateX(100%);
+}
+.thumbnail-toggle-btn.active-right:hover::before,
+.thumbnail-grid-btn.active-right:hover::before {
+  transform: translateX(calc(100% - 6px));
+}
 .thumbnail-toggle-btn .option,
 .thumbnail-grid-btn .option {
   flex: 1;
   padding: 0.5rem 0.75rem;
   border-radius: 3rem;
   text-align: center;
-  transition: all 0.2s ease-in-out;
   position: relative;
   z-index: 1;
+  transition: color 0.3s ease;
 }
 .thumbnail-toggle-btn .option.active,
 .thumbnail-grid-btn .option.active {
-  background-color: rgba(255, 0, 255, 0.1);
   color: #ff00ff;
   font-weight: 500;
 }
+.thumbnail-toggle-btn .option.active:hover,
+.thumbnail-grid-btn .option.active:hover {
+  text-decoration: none !important;
+}
 .thumbnail-toggle-btn:hover,
 .thumbnail-grid-btn:hover {
-  color: #ff00ff;
+  color: white;
 }
 
 .thumbnail-toggle-btn {
@@ -907,15 +967,15 @@ a[href^="https://"]:hover:after {
   bottom: 2rem;
   right: 2rem;
   z-index: 1000;
-  background-color: white;
-  color: black;
+  background-color: #ff00ff;
+  color: white;
   padding: 1.25rem 2rem;
   border-radius: 3rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  letter-spacing: -1px;
   text-align: right;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
   font-family: "Funnel Sans", sans-serif;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -925,7 +985,7 @@ a[href^="https://"]:hover:after {
   }
 }
 .scroll-top-btn:hover {
-  color: #ff00ff;
+  text-decoration: underline;
 }
 
 .mobile-feed-link {

@@ -99,13 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             isSmall = !isSmall;
             
-            // Toggle the class on the container
+            // Toggle the class on the container and animate slider
             if (isSmall) {
                 container.classList.add('thumbnails-small');
+                toggleBtn.classList.remove('active-right');
                 smallerOption?.classList.add('active');
                 largerOption?.classList.remove('active');
             } else {
                 container.classList.remove('thumbnails-small');
+                toggleBtn.classList.add('active-right');
                 smallerOption?.classList.remove('active');
                 largerOption?.classList.add('active');
             }
@@ -114,9 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
             restoreScrollPosition(anchor);
         });
 
-        // Initialize: larger is active by default
+        // Initialize: larger (right) is active by default
         if (largerOption) {
             largerOption.classList.add('active');
+            toggleBtn.classList.add('active-right');
         }
     }
 
@@ -128,13 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
             
             isGrid = !isGrid;
             
-            // Toggle the grid class on the container
+            // Toggle the grid class on the container and animate slider
             if (isGrid) {
                 container.classList.add('thumbnails-grid');
+                gridBtn.classList.add('active-right');
                 listOption?.classList.remove('active');
                 gridOption?.classList.add('active');
             } else {
                 container.classList.remove('thumbnails-grid');
+                gridBtn.classList.remove('active-right');
                 listOption?.classList.add('active');
                 gridOption?.classList.remove('active');
             }
@@ -143,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             restoreScrollPosition(anchor);
         });
 
-        // Initialize: list is active by default
+        // Initialize: list (left) is active by default
         if (listOption) {
             listOption.classList.add('active');
         }

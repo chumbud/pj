@@ -70,6 +70,22 @@ a {
     text-underline-position: from-font;
 
     &[href^="https://"] {
+        position: relative;
+
+        &::before {
+            content: url('../img/wave-bye.gif');
+            position: absolute;
+            left: 50%;
+            bottom: 100%;
+            transform: translateX(-50%) translateY(5px) scale(0.375);
+            transform-origin: center bottom;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.25, 0.64, 1);
+            pointer-events: none;
+            margin-bottom: 0.25rem;
+            image-rendering: pixelated;
+        }
+
         &:after {
             content: url("../img/pink.svg");
             width: 1rem;
@@ -81,6 +97,11 @@ a {
         &:hover {
             background-color: #ff00ff;
             color: #fff;
+
+            &::before {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(0.375);
+            }
 
             &:after {
                 content: url("../img/white.svg");
@@ -656,6 +677,11 @@ a {
 
     .bottom {
         margin-bottom: 2rem;
+        align-items: flex-end;
+
+        a {
+            width: fit-content;
+        }
     }
 }
 
@@ -890,28 +916,68 @@ a {
 
 .thumbnail-toggle-btn,
 .thumbnail-grid-btn {
+
+    .option {
+        letter-spacing: -1px;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.thumbnail-toggle-btn,
+.thumbnail-grid-btn {
     display: none;
     position: fixed;
     bottom: 2rem;
     z-index: 1000;
-    background-color: white;
-    color: black;
+    background-color: $color-magenta;
+    color: white;
     padding: 0.75rem;
     border-radius: 3rem;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     border: none;
     cursor: pointer;
-    transition: all .2s ease-in-out;
     font-family: "Funnel Sans", sans-serif;
     width: 15rem;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 
     @media (min-width: $breakpoint-tablet) {
         display: flex;
+    }
+
+    // Sliding indicator
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0.75rem;
+        left: 0.75rem;
+        width: calc(50% - 0.75rem);
+        height: calc(100% - 1.5rem);
+        background-color: white;
+        border-radius: 3rem;
+        transition: transform 0.4s cubic-bezier(0.34, 1.25, 0.64, 1);
+        z-index: 0;
+    }
+
+    // Hint towards right on hover (when indicator is on left)
+    &:hover::before {
+        transform: translateX(6px);
+    }
+
+    // Slide indicator to right when active-right class is present
+    &.active-right::before {
+        transform: translateX(100%);
+    }
+
+    // Hint towards left on hover (when indicator is on right)
+    &.active-right:hover::before {
+        transform: translateX(calc(100% - 6px));
     }
 
     .option {
@@ -919,19 +985,22 @@ a {
         padding: 0.5rem 0.75rem;
         border-radius: 3rem;
         text-align: center;
-        transition: all 0.2s ease-in-out;
         position: relative;
         z-index: 1;
+        transition: color 0.3s ease;
 
         &.active {
-            background-color: rgba($color-magenta, .1);
             color: $color-magenta;
             font-weight: 500;
+
+            &:hover {
+                text-decoration: none !important;
+            }
         }
     }
 
     &:hover {
-        color: $color-magenta;
+        color: white;
     }
 }
 
@@ -959,15 +1028,15 @@ a {
     bottom: 2rem;
     right: 2rem;
     z-index: 1000;
-    background-color: white;
-    color: black;
+    background-color: $color-magenta;
+    color: white;
     padding: 1.25rem 2rem;
     border-radius: 3rem;
-    font-size: 1.5rem;
+    font-size: 1.75rem; 
+    letter-spacing: -1px;
     text-align: right;
     border: none;
     cursor: pointer;
-    transition: all .2s ease-in-out;
     font-family: "Funnel Sans", sans-serif;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
@@ -976,7 +1045,7 @@ a {
     }
 
     &:hover {
-        color: $color-magenta;
+        text-decoration: underline;
     }
 }
 

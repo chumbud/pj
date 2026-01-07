@@ -4,6 +4,13 @@ $breakpoint-tablet: 76.8rem;
     position: absolute;
 }
 
+// Hide toggle buttons on minerals page
+.thumbnail-toggle-btn,
+.thumbnail-grid-btn,
+.scroll-top-btn {
+    display: none !important;
+}
+
 .mineral-gallery-container {
 
     @media (min-width: $breakpoint-tablet) {
