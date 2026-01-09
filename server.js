@@ -94,6 +94,58 @@ app.get('/minerals', async (req, res) => {
 });
 
 
+// Returns a random block from the entire channel
+app.get('/api/random-block', async (req, res) => {
+    const apiUrlSlug = req.query.channel || ARENA_CHANNEL_SLUG;
+    
+    try {
+        // First, get the channel info to know total blocks
+        const channelInfoUrl = `https://api.are.na/v2/channels/${apiUrlSlug}?per=0`;
+        const infoResponse = await axios.get(channelInfoUrl);
+        const totalBlocks = infoResponse.data.length || 0;
+        
+        if (totalBlocks === 0) {
+            return res.status(404).json({ error: 'No blocks in channel' });
+        }
+        
+        // Pick a random page (with per=1, page number = block index)
+        const randomPage = Math.floor(Math.random() * totalBlocks) + 1;
+        
+        // Fetch just that one block
+        const blockUrl = `https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=1&page=${randomPage}&direction=desc`;
+        const blockResponse = await axios.get(blockUrl);
+        const blocks = blockResponse.data.contents || [];
+        
+        // Find an image block (retry a few times if we get a non-image block)
+        let block = blocks[0];
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        while ((!block || !block.image || !block.image.original) && attempts < maxAttempts) {
+            const retryPage = Math.floor(Math.random() * totalBlocks) + 1;
+            const retryResponse = await axios.get(`https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=1&page=${retryPage}&direction=desc`);
+            block = retryResponse.data.contents?.[0];
+            attempts++;
+        }
+        
+        if (!block || !block.image || !block.image.original) {
+            return res.status(404).json({ error: 'Could not find an image block' });
+        }
+        
+        res.json({
+            block: {
+                originalUrl: block.image.original.url,
+                thumbUrl: block.image.thumb?.url,
+                title: block.title || 'Are.na Image Block',
+                sourceUrl: block.source?.url || '#',
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching random block:', error.message);
+        res.status(500).json({ error: 'Failed to fetch random block' });
+    }
+});
+
 // This route responds with pure JSON data, which the client-side JavaScript will use to append content.
 app.get('/api/blocks', async (req, res) => {
     // 1. Extract the channel slug from the query string, defaulting to the environment variable

@@ -154,24 +154,42 @@ function closeModal() {
 }
 
 /**
- * Navigates to a random block in the modal.
+ * Navigates to a random block from the entire channel (not just loaded blocks).
  */
-function navigateToRandomBlock() {
-    const allLinks = Array.from(document.querySelectorAll('.image-link'));
-    if (allLinks.length === 0) return;
-
-    // Pick a random index different from current if possible
-    let randomIndex;
-    if (allLinks.length === 1) {
-        randomIndex = 0;
-    } else {
-        const currentIndex = currentModalLink ? allLinks.indexOf(currentModalLink) : -1;
-        do {
-            randomIndex = Math.floor(Math.random() * allLinks.length);
-        } while (randomIndex === currentIndex);
+async function navigateToRandomBlock() {
+    const modalPlaceholder = document.getElementById('modal-placeholder');
+    const modalImg = document.getElementById('modal-image');
+    
+    // Show loading state
+    if (modalPlaceholder) {
+        modalPlaceholder.style.display = 'flex';
+        modalPlaceholder.innerHTML = 'Finding random block...';
     }
-
-    openModalFromLink(allLinks[randomIndex]);
+    if (modalImg) {
+        modalImg.style.display = 'none';
+    }
+    
+    try {
+        const response = await fetch('/api/random-block');
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch random block');
+        }
+        
+        const data = await response.json();
+        
+        // Clear current link tracking since this block may not be in the DOM
+        currentModalLink = null;
+        
+        // Open the random block in the modal
+        openModal(data.block.originalUrl, data.block.title, data.block.sourceUrl);
+        
+    } catch (error) {
+        console.error('Error fetching random block:', error);
+        if (modalPlaceholder) {
+            modalPlaceholder.innerHTML = 'Error loading random block';
+        }
+    }
 }
 
 /**
