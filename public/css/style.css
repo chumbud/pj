@@ -22,6 +22,16 @@ body {
   min-height: 100vh;
   display: flex;
 }
+::selection {
+  background-color: black;
+  color: #ff00ff;
+}
+
+::-moz-selection {
+  background-color: black;
+  color: #ff00ff;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -29,7 +39,7 @@ body {
   font-family: "Funnel Sans", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
 }
 @media (min-width: 76.8rem) {
   * {
@@ -668,7 +678,7 @@ a[href^="https://"]:hover:after {
   top: unset;
   bottom: -6vw;
   left: unset;
-  right: -25vw;
+  right: -17vw;
   z-index: 100;
   scale: 0.75;
   transition: all 0.1s ease-in-out;
@@ -1123,6 +1133,7 @@ a[href^="https://"]:hover:after {
   font-size: 1rem;
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-start;
   background-color: white;
@@ -1131,6 +1142,10 @@ a[href^="https://"]:hover:after {
   .mobile-links {
     display: none;
   }
+}
+.mobile-links .contact-btn {
+  flex-basis: 100%;
+  margin-top: 0.5rem;
 }
 
 .mobile {
@@ -1153,6 +1168,7 @@ a[href^="https://"]:hover:after {
 
 .contact-btn {
   cursor: pointer;
+  margin-top: 2rem;
 }
 .contact-btn:hover {
   color: #ff00ff;
@@ -1197,8 +1213,8 @@ a[href^="https://"]:hover:after {
 .contact-modal-content .contact-close-btn {
   position: absolute;
   top: 1rem;
-  right: 1rem;
-  font-size: 1.5rem;
+  right: 2rem;
+  font-size: 3.5rem;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   line-height: 1;
@@ -1255,11 +1271,13 @@ a[href^="https://"]:hover:after {
 }
 
 .contact-note {
-  text-align: center;
-  font-size: 1.4rem;
+  text-align: right;
+  font-size: 1.25rem;
   opacity: 0.75;
-  margin-top: 1rem;
+  letter-spacing: 0px;
+  margin-top: 0.5rem;
   margin-bottom: 0;
+  padding: 0 1rem 0 2rem;
 }
 
 .contact-status {

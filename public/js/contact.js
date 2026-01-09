@@ -4,22 +4,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('contact-modal');
     const openBtn = document.getElementById('contact-btn');
+    const mobileOpenBtn = document.getElementById('mobile-contact-btn');
     const closeBtn = document.getElementById('contact-close-btn');
     const form = document.getElementById('contact-form');
     const statusEl = document.getElementById('contact-status');
     const submitBtn = document.getElementById('contact-submit');
 
-    if (!modal || !openBtn) return;
+    if (!modal) return;
 
-    // Open modal
-    openBtn.addEventListener('click', (e) => {
+    // Open modal function
+    function openModal(e) {
         e.preventDefault();
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         // Clear previous status
         statusEl.textContent = '';
         statusEl.className = 'contact-status';
-    });
+    }
+
+    // Open modal from desktop nav
+    if (openBtn) {
+        openBtn.addEventListener('click', openModal);
+    }
+
+    // Open modal from mobile links
+    if (mobileOpenBtn) {
+        mobileOpenBtn.addEventListener('click', openModal);
+    }
 
     // Close modal
     function closeModal() {

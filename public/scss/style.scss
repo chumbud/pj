@@ -33,6 +33,15 @@ body {
     }
 }
 
+::selection {
+    background-color: black;
+    color: $color-magenta;
+}
+
+::-moz-selection {
+    background-color: black;
+    color: $color-magenta;
+}
 
 * {
     &,
@@ -45,7 +54,7 @@ body {
     sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    letter-spacing: -1.5px;
+    letter-spacing: -1px;
 
     @media (min-width: $breakpoint-tablet) {
         letter-spacing: -2px;
@@ -710,7 +719,7 @@ a {
     top: unset;
     bottom: -6vw;
     left: unset;
-    right: -25vw;
+    right: -17vw;
     z-index: 100;
     scale: .75;
     transition: all .1s ease-in-out;
@@ -1186,12 +1195,18 @@ a {
     font-size: 1rem;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: .5rem;
     justify-content: flex-start;
     background-color: white;
 
     @media (min-width: $breakpoint-tablet) {
         display: none;
+    }
+
+    .contact-btn {
+        flex-basis: 100%;
+        margin-top: 0.5rem;
     }
 }
 
@@ -1214,6 +1229,7 @@ a {
 // Contact Modal
 .contact-btn {
     cursor: pointer;
+    margin-top: 2rem;
     
     &:hover {
         color: $color-magenta;
@@ -1262,8 +1278,8 @@ a {
     .contact-close-btn {
         position: absolute;
         top: 1rem;
-        right: 1rem;
-        font-size: 1.5rem;
+        right: 2rem;
+        font-size: 3.5rem;
         color: rgba(255, 255, 255, 0.5);
         cursor: pointer;
         line-height: 1;
@@ -1329,11 +1345,13 @@ a {
 }
 
 .contact-note {
-    text-align: center;
-    font-size: 1.4rem;
+    text-align: right;
+    font-size: 1.25rem;
     opacity: 0.75;
-    margin-top: 1rem;
+    letter-spacing: 0px;
+    margin-top: .5rem;
     margin-bottom: 0;
+    padding: 0 1rem 0 2rem;
 }
 
 .contact-status {
