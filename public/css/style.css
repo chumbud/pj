@@ -1254,6 +1254,14 @@ a[href^="https://"]:hover:after {
   cursor: not-allowed;
 }
 
+.contact-note {
+  text-align: center;
+  font-size: 1.4rem;
+  opacity: 0.75;
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
 .contact-status {
   text-align: center;
   font-size: 1.5rem;
