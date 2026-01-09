@@ -1157,6 +1157,9 @@ a[href^="https://"]:hover:after {
 .contact-btn:hover {
   color: #ff00ff;
 }
+.contact-btn:hover::after {
+  content: none !important;
+}
 
 .contact-modal {
   display: none;
@@ -1171,19 +1174,23 @@ a[href^="https://"]:hover:after {
   align-items: center;
   backdrop-filter: blur(4px);
 }
+.contact-modal * {
+  letter-spacing: 0px;
+  font-size: 2.5rem;
+}
 
 .contact-modal-content {
   background: #1a1a1a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  padding: 2rem;
-  max-width: 400px;
+  padding: 4rem;
+  max-width: 600px;
   width: 90%;
   position: relative;
 }
 .contact-modal-content h2 {
   margin: 0 0 1.5rem 0;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: 500;
   color: #fff;
 }
@@ -1210,7 +1217,7 @@ a[href^="https://"]:hover:after {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  font-size: 1rem;
+  font-size: 2rem;
   color: #fff;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -1232,7 +1239,7 @@ a[href^="https://"]:hover:after {
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  font-size: 2rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
