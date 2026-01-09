@@ -56,19 +56,6 @@
             <a href="#" class="contact-btn" id="contact-btn">contact</a>
         </ul>
     </section>
-    <!-- Contact Modal -->
-    <div id="contact-modal" class="contact-modal">
-        <div class="contact-modal-content">
-            <span class="contact-close-btn" id="contact-close-btn">&times;</span>
-            <h2>let's connect</h2>
-            <form id="contact-form">
-                <input type="email" id="contact-email" name="email" placeholder="your email" required>
-                <textarea id="contact-message" name="message" placeholder="your message" rows="4" required></textarea>
-                <button type="submit" id="contact-submit">send</button>
-            </form>
-            <div id="contact-status" class="contact-status"></div>
-        </div>
-    </div>
     <section class="arena-feed">
         <button class="thumbnail-toggle-btn" id="thumbnail-toggle-btn" aria-label="Toggle thumbnail size"><span class="option">smaller</span> <span class="option">larger</span></button>
         <button class="thumbnail-grid-btn" id="thumbnail-grid-btn" aria-label="Toggle grid layout"><span class="option">list</span> <span class="option">grid</span></button>
@@ -192,6 +179,19 @@ font-weight: bold;"></div>
         </div>
         <div class="faded-image" style="background-image: url('img/2.jpg');"></div>
     </section>
+<!-- Contact Modal -->
+<div id="contact-modal" class="contact-modal">
+    <div class="contact-modal-content">
+        <span class="contact-close-btn" id="contact-close-btn">&times;</span>
+        <h2>let's connect</h2>
+        <form id="contact-form">
+            <input type="email" id="contact-email" name="email" placeholder="your email" required>
+            <textarea id="contact-message" name="message" placeholder="your message" rows="4" required></textarea>
+            <button type="submit" id="contact-submit">send</button>
+        </form>
+        <div id="contact-status" class="contact-status"></div>
+    </div>
+</div>
     <script type="module" src="/js/scrub.js"></script>
     <script type="module" src="/js/gallery-view.js"></script>
     <script type="module" src="/js/thumbnail-toggle.js"></script>
