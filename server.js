@@ -280,7 +280,7 @@ app.post('/api/contact', async (req, res) => {
             from: process.env.GMAIL_USER,
             to: process.env.GMAIL_USER, // Send to yourself
             replyTo: email, // Reply goes to the sender
-            subject: `pj.codes contact from ${email}`,
+            subject: `someone just sent you a message!`,
             text: `From: ${email}\n\nMessage:\n${message}`,
             html: `
                 <h3>New contact form submission</h3>
