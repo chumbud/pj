@@ -154,6 +154,27 @@ function closeModal() {
 }
 
 /**
+ * Navigates to a random block in the modal.
+ */
+function navigateToRandomBlock() {
+    const allLinks = Array.from(document.querySelectorAll('.image-link'));
+    if (allLinks.length === 0) return;
+
+    // Pick a random index different from current if possible
+    let randomIndex;
+    if (allLinks.length === 1) {
+        randomIndex = 0;
+    } else {
+        const currentIndex = currentModalLink ? allLinks.indexOf(currentModalLink) : -1;
+        do {
+            randomIndex = Math.floor(Math.random() * allLinks.length);
+        } while (randomIndex === currentIndex);
+    }
+
+    openModalFromLink(allLinks[randomIndex]);
+}
+
+/**
  * Shakes the modal image as feedback when user can't navigate further.
  */
 function shakeModalImage() {
@@ -242,6 +263,10 @@ function setupModalListeners() {
                 case 'D':
                 case 'ArrowRight':
                     navigateModal('next');
+                    break;
+                case 's':
+                case 'S':
+                    navigateToRandomBlock();
                     break;
             }
         });
