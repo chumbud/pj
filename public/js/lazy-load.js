@@ -26,6 +26,16 @@ function showKeyPressed(keyId) {
     const keyEl = document.getElementById(keyId);
     if (keyEl) {
         keyEl.classList.add('pressed');
+        
+        // Special handling for shuffle key - show "shuffled!" text
+        if (keyId === 'key-s') {
+            const label = keyEl.querySelector('.key-label');
+            if (label) {
+                label.textContent = 'shuffled!';
+                setTimeout(() => { label.textContent = 'S'; }, 800);
+            }
+        }
+        
         setTimeout(() => keyEl.classList.remove('pressed'), 100);
     }
 }

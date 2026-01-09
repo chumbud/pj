@@ -118,9 +118,12 @@ $breakpoint-tablet: 76.8rem;
 }
 
 .modal-key-shuffle {
-    bottom: 20px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
+    width: auto;
+    padding: 0 16px;
+    min-width: 48px;
     
     &.pressed {
         transform: translateX(-50%) scale(0.92);
