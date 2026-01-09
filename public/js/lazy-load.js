@@ -270,12 +270,31 @@ function shakeModalImage() {
  * @param {string} direction - 'prev' or 'next'
  */
 async function navigateModal(direction) {
-    if (!currentModalLink) return;
-
     const allLinks = Array.from(document.querySelectorAll('.image-link'));
+    
+    if (allLinks.length === 0) return;
+    
+    // If no current link (e.g., after shuffle), start from first or last block
+    if (!currentModalLink) {
+        if (direction === 'prev') {
+            openModalFromLink(allLinks[allLinks.length - 1]); // Go to last
+        } else {
+            openModalFromLink(allLinks[0]); // Go to first
+        }
+        return;
+    }
+
     const currentIndex = allLinks.indexOf(currentModalLink);
 
-    if (currentIndex === -1) return;
+    // If current link not found in DOM (shuffled from API), go to first/last
+    if (currentIndex === -1) {
+        if (direction === 'prev') {
+            openModalFromLink(allLinks[allLinks.length - 1]);
+        } else {
+            openModalFromLink(allLinks[0]);
+        }
+        return;
+    }
 
     if (direction === 'prev') {
         if (currentIndex === 0) {
