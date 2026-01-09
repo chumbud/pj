@@ -155,19 +155,11 @@ function closeModal() {
 
 /**
  * Navigates to a random block from the entire channel (not just loaded blocks).
+ * Falls back to local random if API fails.
  */
 async function navigateToRandomBlock() {
     const modalPlaceholder = document.getElementById('modal-placeholder');
     const modalImg = document.getElementById('modal-image');
-    
-    // Show loading state
-    if (modalPlaceholder) {
-        modalPlaceholder.style.display = 'flex';
-        modalPlaceholder.innerHTML = 'Finding random block...';
-    }
-    if (modalImg) {
-        modalImg.style.display = 'none';
-    }
     
     try {
         const response = await fetch('/api/random-block');
@@ -185,9 +177,23 @@ async function navigateToRandomBlock() {
         openModal(data.block.originalUrl, data.block.title, data.block.sourceUrl);
         
     } catch (error) {
-        console.error('Error fetching random block:', error);
-        if (modalPlaceholder) {
-            modalPlaceholder.innerHTML = 'Error loading random block';
+        console.error('Error fetching random block, falling back to local:', error);
+        
+        // Fallback: pick from loaded blocks instead
+        const allLinks = Array.from(document.querySelectorAll('.image-link'));
+        
+        if (allLinks.length > 1) {
+            // Pick a random loaded block (different from current)
+            const currentIndex = currentModalLink ? allLinks.indexOf(currentModalLink) : -1;
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * allLinks.length);
+            } while (randomIndex === currentIndex && allLinks.length > 1);
+            
+            openModalFromLink(allLinks[randomIndex]);
+        } else {
+            // No other blocks available, shake as feedback
+            shakeModalImage();
         }
     }
 }

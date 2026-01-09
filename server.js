@@ -94,43 +94,72 @@ app.get('/minerals', async (req, res) => {
 });
 
 
+// Cache for channel length to reduce API calls
+const channelLengthCache = {};
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
 // Returns a random block from the entire channel
 app.get('/api/random-block', async (req, res) => {
     const apiUrlSlug = req.query.channel || ARENA_CHANNEL_SLUG;
     
     try {
-        // First, get the channel info to know total blocks
-        const channelInfoUrl = `https://api.are.na/v2/channels/${apiUrlSlug}?per=0`;
-        const infoResponse = await axios.get(channelInfoUrl);
-        const totalBlocks = infoResponse.data.length || 0;
+        let totalBlocks;
+        
+        // Check cache for channel length
+        const cached = channelLengthCache[apiUrlSlug];
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            totalBlocks = cached.length;
+        } else {
+            // Fetch channel info to get total blocks
+            const channelInfoUrl = `https://api.are.na/v2/channels/${apiUrlSlug}?per=1`;
+            const infoResponse = await axios.get(channelInfoUrl);
+            totalBlocks = infoResponse.data.length || 0;
+            
+            // Cache the result
+            channelLengthCache[apiUrlSlug] = {
+                length: totalBlocks,
+                timestamp: Date.now()
+            };
+        }
         
         if (totalBlocks === 0) {
             return res.status(404).json({ error: 'No blocks in channel' });
         }
         
-        // Pick a random page (with per=1, page number = block index)
-        const randomPage = Math.floor(Math.random() * totalBlocks) + 1;
+        // Fetch a small batch instead of 1 to increase chance of getting an image
+        const batchSize = 5;
+        const maxPage = Math.ceil(totalBlocks / batchSize);
+        const randomPage = Math.floor(Math.random() * maxPage) + 1;
         
-        // Fetch just that one block
-        const blockUrl = `https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=1&page=${randomPage}&direction=desc`;
+        const blockUrl = `https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=${batchSize}&page=${randomPage}&direction=desc`;
         const blockResponse = await axios.get(blockUrl);
         const blocks = blockResponse.data.contents || [];
         
-        // Find an image block (retry a few times if we get a non-image block)
-        let block = blocks[0];
-        let attempts = 0;
-        const maxAttempts = 5;
+        // Filter to only image blocks and pick a random one
+        const imageBlocks = blocks.filter(b => b.image && b.image.original);
         
-        while ((!block || !block.image || !block.image.original) && attempts < maxAttempts) {
-            const retryPage = Math.floor(Math.random() * totalBlocks) + 1;
-            const retryResponse = await axios.get(`https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=1&page=${retryPage}&direction=desc`);
-            block = retryResponse.data.contents?.[0];
-            attempts++;
+        if (imageBlocks.length === 0) {
+            // Try one more batch if no images found
+            const retryPage = Math.floor(Math.random() * maxPage) + 1;
+            const retryResponse = await axios.get(`https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=${batchSize}&page=${retryPage}&direction=desc`);
+            const retryBlocks = (retryResponse.data.contents || []).filter(b => b.image && b.image.original);
+            
+            if (retryBlocks.length === 0) {
+                return res.status(404).json({ error: 'Could not find an image block' });
+            }
+            
+            const block = retryBlocks[Math.floor(Math.random() * retryBlocks.length)];
+            return res.json({
+                block: {
+                    originalUrl: block.image.original.url,
+                    thumbUrl: block.image.thumb?.url,
+                    title: block.title || 'Are.na Image Block',
+                    sourceUrl: block.source?.url || '#',
+                }
+            });
         }
         
-        if (!block || !block.image || !block.image.original) {
-            return res.status(404).json({ error: 'Could not find an image block' });
-        }
+        const block = imageBlocks[Math.floor(Math.random() * imageBlocks.length)];
         
         res.json({
             block: {
