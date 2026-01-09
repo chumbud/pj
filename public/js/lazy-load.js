@@ -9,6 +9,7 @@ let currentPage = 1;
 let totalPages = 1;
 let isFetching = false; // Flag to prevent multiple concurrent fetches
 const fetchedPages = new Set([1]); // Track which pages have been fetched (page 1 is pre-rendered)
+let currentModalLink = null; // Track the currently displayed image link for keyboard navigation
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Retrieve pagination metadata passed from the server via hidden elements
@@ -72,11 +73,20 @@ function handleImageClick(e) {
 
     e.preventDefault();
 
+    openModalFromLink(linkElement);
+}
+
+/**
+ * Opens the modal from a link element.
+ * @param {HTMLElement} linkElement - The image link element to display.
+ */
+function openModalFromLink(linkElement) {
     const originalUrl = linkElement.dataset.originalUrl;
     const title = linkElement.dataset.title;
     const sourceUrl = linkElement.dataset.sourceUrl;
 
     if (originalUrl) {
+        currentModalLink = linkElement; // Track current link for keyboard nav
         openModal(originalUrl, title, sourceUrl);
     }
 }
@@ -139,6 +149,32 @@ function closeModal() {
         document.body.style.overflow = ''; // Restore background scrolling
         // Clear the image source when closing the modal to save memory
         modalImg.src = '';
+        currentModalLink = null; // Clear tracked link
+    }
+}
+
+/**
+ * Navigates to the previous or next image in the modal.
+ * @param {string} direction - 'prev' or 'next'
+ */
+function navigateModal(direction) {
+    if (!currentModalLink) return;
+
+    const allLinks = Array.from(document.querySelectorAll('.image-link'));
+    const currentIndex = allLinks.indexOf(currentModalLink);
+
+    if (currentIndex === -1) return;
+
+    let newIndex;
+    if (direction === 'prev') {
+        newIndex = currentIndex > 0 ? currentIndex - 1 : allLinks.length - 1; // Wrap to end
+    } else {
+        newIndex = currentIndex < allLinks.length - 1 ? currentIndex + 1 : 0; // Wrap to start
+    }
+
+    const newLink = allLinks[newIndex];
+    if (newLink) {
+        openModalFromLink(newLink);
     }
 }
 
@@ -160,10 +196,24 @@ function setupModalListeners() {
             }
         });
 
-        // Close via Escape key
+        // Keyboard controls when modal is open
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'flex') {
-                closeModal();
+            if (modal.style.display !== 'flex') return;
+
+            switch (e.key) {
+                case 'Escape':
+                    closeModal();
+                    break;
+                case 'a':
+                case 'A':
+                case 'ArrowLeft':
+                    navigateModal('prev');
+                    break;
+                case 'd':
+                case 'D':
+                case 'ArrowRight':
+                    navigateModal('next');
+                    break;
             }
         });
     }
