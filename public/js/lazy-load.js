@@ -154,10 +154,22 @@ function closeModal() {
 }
 
 /**
+ * Shakes the modal image as feedback when user can't navigate further.
+ */
+function shakeModalImage() {
+    const modalImg = document.getElementById('modal-image');
+    const modalPlaceholder = document.getElementById('modal-placeholder');
+    const target = modalImg.style.display !== 'none' ? modalImg : modalPlaceholder;
+    
+    target.classList.add('shake');
+    setTimeout(() => target.classList.remove('shake'), 300);
+}
+
+/**
  * Navigates to the previous or next image in the modal.
  * @param {string} direction - 'prev' or 'next'
  */
-function navigateModal(direction) {
+async function navigateModal(direction) {
     if (!currentModalLink) return;
 
     const allLinks = Array.from(document.querySelectorAll('.image-link'));
@@ -165,16 +177,33 @@ function navigateModal(direction) {
 
     if (currentIndex === -1) return;
 
-    let newIndex;
     if (direction === 'prev') {
-        newIndex = currentIndex > 0 ? currentIndex - 1 : allLinks.length - 1; // Wrap to end
+        if (currentIndex === 0) {
+            // At first block, shake as feedback
+            shakeModalImage();
+            return;
+        }
+        openModalFromLink(allLinks[currentIndex - 1]);
     } else {
-        newIndex = currentIndex < allLinks.length - 1 ? currentIndex + 1 : 0; // Wrap to start
-    }
-
-    const newLink = allLinks[newIndex];
-    if (newLink) {
-        openModalFromLink(newLink);
+        if (currentIndex === allLinks.length - 1) {
+            // At last block, try to load more
+            if (currentPage < totalPages && !isFetching) {
+                await fetchMoreBlocks();
+                // Check if new blocks were added
+                const updatedLinks = Array.from(document.querySelectorAll('.image-link'));
+                if (updatedLinks.length > allLinks.length) {
+                    openModalFromLink(updatedLinks[currentIndex + 1]);
+                } else {
+                    // No more blocks to load, shake as feedback
+                    shakeModalImage();
+                }
+            } else {
+                // Already at end of channel, shake as feedback
+                shakeModalImage();
+            }
+            return;
+        }
+        openModalFromLink(allLinks[currentIndex + 1]);
     }
 }
 
