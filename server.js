@@ -55,15 +55,21 @@ async function fetchArenaBlocks(page = 1, per = 20, apiUrlSlug) {
 // 3. Define the main route: Initial Page Load (HTML + first 10 blocks)
 app.get('/likes', async (req, res) => {
     const initialLoadCount = 40;
-    const data = await fetchArenaBlocks(1, initialLoadCount, ARENA_CHANNEL_SLUG); // Fetch page 1 (first 10)
+    const apiPerPage = 20; // Must match the 'per' value used in /api/blocks
+    const data = await fetchArenaBlocks(1, initialLoadCount, ARENA_CHANNEL_SLUG);
+
+    // Calculate how many API pages the initial load covers
+    const pagesLoaded = Math.ceil(initialLoadCount / apiPerPage);
+    // Recalculate totalPages based on the API's per-page value (20), not initial load (40)
+    const totalPagesForApi = Math.ceil(data.totalBlocks / apiPerPage);
 
     // Render the EJS file, passing blocks AND the necessary pagination info
     // This data will be critical for the client-side lazy-loader.js
     res.render('likes', {
         pageTitle: data.title,
         channelBlocks: data.blocks,
-        totalPages: data.totalPages, // Pass to client for lazy loading control
-        currentPage: data.currentPage, // Should be 1
+        totalPages: totalPagesForApi,
+        currentPage: pagesLoaded, // Start from page 2 since we loaded 40 blocks (2 pages worth)
         totalBlocks: data.totalBlocks,
         updatedAt: data.updatedAt,
     });
