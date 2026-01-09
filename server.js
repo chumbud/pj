@@ -152,9 +152,9 @@ app.get('/api/random-block', async (req, res) => {
             return res.json({
                 block: {
                     originalUrl: block.image.original.url,
-                    thumbUrl: block.image.thumb?.url,
+                    thumbUrl: block.image.thumb ? block.image.thumb.url : null,
                     title: block.title || 'Are.na Image Block',
-                    sourceUrl: block.source?.url || '#',
+                    sourceUrl: (block.source && block.source.url) ? block.source.url : '#',
                 }
             });
         }
@@ -168,9 +168,9 @@ app.get('/api/random-block', async (req, res) => {
         res.json({
             block: {
                 originalUrl: block.image.original.url,
-                thumbUrl: block.image.thumb?.url,
+                thumbUrl: block.image.thumb ? block.image.thumb.url : null,
                 title: block.title || 'Are.na Image Block',
-                sourceUrl: block.source?.url || '#',
+                sourceUrl: (block.source && block.source.url) ? block.source.url : '#',
             },
             position: absolutePosition,
             totalBlocks: totalBlocks
@@ -207,9 +207,9 @@ app.get('/api/block-at-position', async (req, res) => {
         res.json({
             block: {
                 originalUrl: block.image.original.url,
-                thumbUrl: block.image.thumb?.url,
+                thumbUrl: block.image.thumb ? block.image.thumb.url : null,
                 title: block.title || 'Are.na Image Block',
-                sourceUrl: block.source?.url || '#',
+                sourceUrl: (block.source && block.source.url) ? block.source.url : '#',
             },
             position: position,
             totalBlocks: totalBlocks
