@@ -8,6 +8,7 @@
 let currentPage = 1;
 let totalPages = 1;
 let isFetching = false; // Flag to prevent multiple concurrent fetches
+const fetchedPages = new Set([1]); // Track which pages have been fetched (page 1 is pre-rendered)
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Retrieve pagination metadata passed from the server via hidden elements
@@ -250,8 +251,17 @@ async function fetchMoreBlocks() {
         return;
     }
 
+    const nextPage = currentPage + 1;
+    
+    // Prevent fetching the same page twice
+    if (fetchedPages.has(nextPage)) {
+        currentPage = nextPage;
+        return;
+    }
+
     isFetching = true;
-    currentPage += 1; // Increment page for the next fetch
+    currentPage = nextPage;
+    fetchedPages.add(currentPage); // Mark this page as fetched
     const loader = document.getElementById('loading-spinner');
 
     // Show loading indicator
@@ -275,7 +285,8 @@ async function fetchMoreBlocks() {
 
     } catch (error) {
         console.error('Error fetching more blocks:', error);
-        // Decrement page count back if the fetch failed, so it can be retried
+        // Remove from fetched set and decrement page count if failed, so it can be retried
+        fetchedPages.delete(currentPage);
         currentPage -= 1;
         loader.textContent = "Error loading content. Try refreshing.";
 
