@@ -37,4 +37,98 @@
   animation: shake 0.3s ease-in-out;
 }
 
+.modal-key {
+  display: none;
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background: rgba(30, 30, 30, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  overflow: hidden;
+  z-index: 1001;
+}
+@media (min-width: 76.8rem) {
+  .modal-key {
+    display: flex;
+  }
+}
+.modal-key .key-label {
+  font-family: "Funnel Sans", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  z-index: 2;
+  user-select: none;
+}
+.modal-key .key-cooldown {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0%;
+  background: linear-gradient(to top, rgba(255, 105, 180, 0.6), rgba(255, 105, 180, 0.3));
+  transition: height 0.1s ease-out;
+  z-index: 1;
+}
+.modal-key:hover {
+  background: rgba(50, 50, 50, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.modal-key.pressed {
+  transform: scale(0.92);
+  background: rgba(255, 105, 180, 0.3);
+  border-color: rgba(255, 105, 180, 0.8);
+}
+.modal-key.pressed .key-label {
+  color: #fff;
+}
+.modal-key.on-cooldown {
+  pointer-events: none;
+}
+.modal-key.on-cooldown .key-label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.modal-key-left {
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.modal-key-left.pressed {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.modal-key-right {
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.modal-key-right.pressed {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.modal-key-shuffle {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.modal-key-shuffle.pressed {
+  transform: translateX(-50%) scale(0.92);
+}
+
+@keyframes cooldownFill {
+  0% {
+    height: 100%;
+  }
+  100% {
+    height: 0%;
+  }
+}
+
 /*# sourceMappingURL=likes.css.map */

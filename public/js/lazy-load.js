@@ -11,6 +11,51 @@ let isFetching = false; // Flag to prevent multiple concurrent fetches
 const fetchedPages = new Set([1]); // Track which pages have been fetched (page 1 is pre-rendered)
 let currentModalLink = null; // Track the currently displayed image link for keyboard navigation
 
+// Cooldown system for rate limiting protection
+const cooldowns = {
+    nav: { active: false, duration: 150 },      // A/D navigation cooldown (ms)
+    shuffle: { active: false, duration: 2000 }, // S shuffle cooldown (ms) - longer due to API call
+    shuffleUses: 0,
+    shuffleResetTimer: null
+};
+
+/**
+ * Shows the pressed state on a key element
+ */
+function showKeyPressed(keyId) {
+    const keyEl = document.getElementById(keyId);
+    if (keyEl) {
+        keyEl.classList.add('pressed');
+        setTimeout(() => keyEl.classList.remove('pressed'), 100);
+    }
+}
+
+/**
+ * Starts a cooldown on a key with visual fill effect
+ */
+function startCooldown(keyId, duration) {
+    const keyEl = document.getElementById(keyId);
+    if (!keyEl) return;
+    
+    const cooldownEl = keyEl.querySelector('.key-cooldown');
+    if (!cooldownEl) return;
+    
+    keyEl.classList.add('on-cooldown');
+    cooldownEl.style.transition = 'none';
+    cooldownEl.style.height = '100%';
+    
+    // Force reflow
+    cooldownEl.offsetHeight;
+    
+    // Animate the cooldown draining (like water emptying)
+    cooldownEl.style.transition = `height ${duration}ms linear`;
+    cooldownEl.style.height = '0%';
+    
+    setTimeout(() => {
+        keyEl.classList.remove('on-cooldown');
+    }, duration);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Retrieve pagination metadata passed from the server via hidden elements
     const totalPagesElement = document.getElementById('total-pages');
@@ -281,17 +326,94 @@ function setupModalListeners() {
                 case 'a':
                 case 'A':
                 case 'ArrowLeft':
-                    navigateModal('prev');
+                    if (!cooldowns.nav.active) {
+                        showKeyPressed('key-a');
+                        cooldowns.nav.active = true;
+                        navigateModal('prev');
+                        setTimeout(() => { cooldowns.nav.active = false; }, cooldowns.nav.duration);
+                    }
                     break;
                 case 'd':
                 case 'D':
                 case 'ArrowRight':
-                    navigateModal('next');
+                    if (!cooldowns.nav.active) {
+                        showKeyPressed('key-d');
+                        cooldowns.nav.active = true;
+                        navigateModal('next');
+                        setTimeout(() => { cooldowns.nav.active = false; }, cooldowns.nav.duration);
+                    }
                     break;
                 case 's':
                 case 'S':
-                    navigateToRandomBlock();
+                    if (!cooldowns.shuffle.active) {
+                        showKeyPressed('key-s');
+                        
+                        // Track shuffle uses for rate limit protection
+                        cooldowns.shuffleUses++;
+                        
+                        // Reset shuffle counter after 30 seconds of no use
+                        clearTimeout(cooldowns.shuffleResetTimer);
+                        cooldowns.shuffleResetTimer = setTimeout(() => {
+                            cooldowns.shuffleUses = 0;
+                        }, 30000);
+                        
+                        // If used too much, apply longer cooldown
+                        if (cooldowns.shuffleUses > 5) {
+                            cooldowns.shuffle.active = true;
+                            startCooldown('key-s', 5000); // 5 second cooldown after heavy use
+                            setTimeout(() => { cooldowns.shuffle.active = false; }, 5000);
+                        } else {
+                            cooldowns.shuffle.active = true;
+                            startCooldown('key-s', cooldowns.shuffle.duration);
+                            setTimeout(() => { cooldowns.shuffle.active = false; }, cooldowns.shuffle.duration);
+                        }
+                        
+                        navigateToRandomBlock();
+                    }
                     break;
+            }
+        });
+        
+        // Click handlers for the key buttons
+        document.getElementById('key-a')?.addEventListener('click', () => {
+            if (!cooldowns.nav.active) {
+                showKeyPressed('key-a');
+                cooldowns.nav.active = true;
+                navigateModal('prev');
+                setTimeout(() => { cooldowns.nav.active = false; }, cooldowns.nav.duration);
+            }
+        });
+        
+        document.getElementById('key-d')?.addEventListener('click', () => {
+            if (!cooldowns.nav.active) {
+                showKeyPressed('key-d');
+                cooldowns.nav.active = true;
+                navigateModal('next');
+                setTimeout(() => { cooldowns.nav.active = false; }, cooldowns.nav.duration);
+            }
+        });
+        
+        document.getElementById('key-s')?.addEventListener('click', () => {
+            if (!cooldowns.shuffle.active) {
+                showKeyPressed('key-s');
+                cooldowns.shuffleUses++;
+                
+                clearTimeout(cooldowns.shuffleResetTimer);
+                cooldowns.shuffleResetTimer = setTimeout(() => {
+                    cooldowns.shuffleUses = 0;
+                }, 30000);
+                
+                if (cooldowns.shuffleUses > 5) {
+                    cooldowns.shuffle.active = true;
+                    startCooldown('key-s', 5000);
+                    setTimeout(() => { cooldowns.shuffle.active = false; }, 5000);
+                } else {
+                    cooldowns.shuffle.active = true;
+                    startCooldown('key-s', cooldowns.shuffle.duration);
+                    setTimeout(() => { cooldowns.shuffle.active = false; }, cooldowns.shuffle.duration);
+                }
+                
+                navigateToRandomBlock();
             }
         });
     }
