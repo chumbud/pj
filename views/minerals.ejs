@@ -68,7 +68,7 @@
                 <span class="likes-last-updated"><span class="label">Last updated:</span> <span id="last-updated-date"
                         data-timestamp="<%= updatedAt %>">Loading Date...</span></span>
                 <span class="source"><span class="label">Source feed:</span> <a
-                        href="https://www.are.na/pj-rosa/my-rock-collection" target="_blank">are.na</a></span>
+                        href="https://www.are.na/pj-rosa/my-rock-slop" target="_blank">are.na</a></span>
             </div>
         </div>
         <div class="mineral-gallery-container">
@@ -89,12 +89,13 @@
                         <div id="special-details-area" class="special-details-area"></div>
                     </div>
                     <div id="channel-content" class="scroll-snap-type">
-                        <div id="channel-slug" data-value="<%= channelBlocks[0].channel_slug %>" style="display: none;"></div>
+                        <div id="channel-slug" data-value="<%= channelSlug %>" style="display: none;"></div>
                         <div id="total-pages" data-value="<%= totalPages %>" style="display: none;"></div>
                         <div id="current-page" data-value="<%= currentPage %>" style="display: none;"></div>
                         <div id="last-updated-date" data-timestamp="<%= updatedAt %>" style="display: none;"></div>
 
                         <% channelBlocks.forEach(function(block) { %>
+                            <% if (block.image && block.image.original && block.image.thumb) { %>
                             <div class="channel-block-thumbnail">
                                 <a href="javascript:void(0);" 
                                 class="gallery-thumbnail-link" 
@@ -106,12 +107,12 @@
                                     <img src="<%= block.image.thumb.url %>" alt="<%= block.title %>" onerror="this.onerror=null; this.src='https://placehold.co/100x75?text=Error';">
                                 </a>
                             </div>
+                            <% } %>
                         <% }); %>
                         <div id="loading-spinner" style="display: none;">Loading...</div>
                     </div>
                 </div>
             </div>
-            <div id="channel-slug" data-value="my-rock-collection" style="display:none;"></div>
             <a class="back-button" href="/">back</a>
             <div id="loading-spinner" style="text-align: center; padding: 20px;
 font-weight: bold;"></div>

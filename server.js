@@ -72,7 +72,7 @@ app.get('/likes', async (req, res) => {
 // 3. Define the main route: Initial Page Load (HTML + first 10 blocks)
 app.get('/minerals', async (req, res) => {
     const initialLoadCount = 40;
-    const data = await fetchArenaBlocks(1, initialLoadCount, 'my-rock-collection'); // Fetch page 1 (first 10)
+    const data = await fetchArenaBlocks(1, initialLoadCount, 'my-rock-slop'); // Fetch page 1 (first 10)
 
     // Render the EJS file, passing blocks AND the necessary pagination info
     // *** FIX: Rendering 'minerals' template ***
@@ -83,6 +83,7 @@ app.get('/minerals', async (req, res) => {
         currentPage: data.currentPage, // Should be 1
         totalBlocks: data.totalBlocks,
         updatedAt: data.updatedAt,
+        channelSlug: 'my-rock-slop',
     });
 });
 
