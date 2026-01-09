@@ -159,7 +159,11 @@ app.get('/api/random-block', async (req, res) => {
             });
         }
         
-        const block = imageBlocks[Math.floor(Math.random() * imageBlocks.length)];
+        const blockIndex = Math.floor(Math.random() * imageBlocks.length);
+        const block = imageBlocks[blockIndex];
+        
+        // Calculate the absolute position in the channel
+        const absolutePosition = ((randomPage - 1) * batchSize) + blockIndex + 1;
         
         res.json({
             block: {
@@ -167,11 +171,52 @@ app.get('/api/random-block', async (req, res) => {
                 thumbUrl: block.image.thumb?.url,
                 title: block.title || 'Are.na Image Block',
                 sourceUrl: block.source?.url || '#',
-            }
+            },
+            position: absolutePosition,
+            totalBlocks: totalBlocks
         });
     } catch (error) {
         console.error('Error fetching random block:', error.message);
         res.status(500).json({ error: 'Failed to fetch random block' });
+    }
+});
+
+// Fetch a block at a specific position in the channel
+app.get('/api/block-at-position', async (req, res) => {
+    const apiUrlSlug = req.query.channel || ARENA_CHANNEL_SLUG;
+    const position = parseInt(req.query.position) || 1;
+    
+    try {
+        // Fetch just that one block using page=position, per=1
+        const blockUrl = `https://api.are.na/v2/channels/${apiUrlSlug}/contents?per=1&page=${position}&direction=desc`;
+        const blockResponse = await axios.get(blockUrl);
+        const blocks = blockResponse.data.contents || [];
+        const totalBlocks = blockResponse.data.length || 0;
+        
+        if (blocks.length === 0) {
+            return res.status(404).json({ error: 'No block at this position' });
+        }
+        
+        const block = blocks[0];
+        
+        // Skip non-image blocks by fetching next/prev
+        if (!block.image || !block.image.original) {
+            return res.status(404).json({ error: 'No image block at this position', skipTo: position + 1 });
+        }
+        
+        res.json({
+            block: {
+                originalUrl: block.image.original.url,
+                thumbUrl: block.image.thumb?.url,
+                title: block.title || 'Are.na Image Block',
+                sourceUrl: block.source?.url || '#',
+            },
+            position: position,
+            totalBlocks: totalBlocks
+        });
+    } catch (error) {
+        console.error('Error fetching block at position:', error.message);
+        res.status(500).json({ error: 'Failed to fetch block' });
     }
 });
 

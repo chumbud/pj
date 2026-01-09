@@ -10,6 +10,8 @@ let totalPages = 1;
 let isFetching = false; // Flag to prevent multiple concurrent fetches
 const fetchedPages = new Set([1]); // Track which pages have been fetched (page 1 is pre-rendered)
 let currentModalLink = null; // Track the currently displayed image link for keyboard navigation
+let shuffledPosition = null; // Track position in channel after shuffle (for API-based navigation)
+let shuffledTotalBlocks = null;
 
 // Cooldown system for rate limiting protection
 const cooldowns = {
@@ -142,6 +144,8 @@ function openModalFromLink(linkElement) {
 
     if (originalUrl) {
         currentModalLink = linkElement; // Track current link for keyboard nav
+        shuffledPosition = null; // Clear shuffle position - back to local nav
+        shuffledTotalBlocks = null;
         openModal(originalUrl, title, sourceUrl);
     }
 }
@@ -228,6 +232,10 @@ async function navigateToRandomBlock() {
         // Clear current link tracking since this block may not be in the DOM
         currentModalLink = null;
         
+        // Store position for subsequent navigation
+        shuffledPosition = data.position;
+        shuffledTotalBlocks = data.totalBlocks;
+        
         // Open the random block in the modal
         openModal(data.block.originalUrl, data.block.title, data.block.sourceUrl);
         
@@ -246,10 +254,46 @@ async function navigateToRandomBlock() {
             } while (randomIndex === currentIndex && allLinks.length > 1);
             
             openModalFromLink(allLinks[randomIndex]);
+            shuffledPosition = null; // Clear shuffle position when falling back to local
         } else {
             // No other blocks available, shake as feedback
             shakeModalImage();
         }
+    }
+}
+
+/**
+ * Fetches and displays a block at a specific position in the channel.
+ */
+async function navigateToPosition(position) {
+    if (position < 1 || (shuffledTotalBlocks && position > shuffledTotalBlocks)) {
+        shakeModalImage();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/block-at-position?position=${position}`);
+        
+        if (!response.ok) {
+            const data = await response.json();
+            // If it's a non-image block, try the next one
+            if (data.skipTo) {
+                return navigateToPosition(data.skipTo);
+            }
+            throw new Error('Failed to fetch block');
+        }
+        
+        const data = await response.json();
+        
+        currentModalLink = null;
+        shuffledPosition = data.position;
+        shuffledTotalBlocks = data.totalBlocks;
+        
+        openModal(data.block.originalUrl, data.block.title, data.block.sourceUrl);
+        
+    } catch (error) {
+        console.error('Error navigating to position:', error);
+        shakeModalImage();
     }
 }
 
@@ -270,23 +314,40 @@ function shakeModalImage() {
  * @param {string} direction - 'prev' or 'next'
  */
 async function navigateModal(direction) {
+    // If we have a shuffled position, navigate via API
+    if (shuffledPosition !== null) {
+        const newPosition = direction === 'prev' ? shuffledPosition - 1 : shuffledPosition + 1;
+        
+        if (newPosition < 1) {
+            shakeModalImage();
+            return;
+        }
+        if (shuffledTotalBlocks && newPosition > shuffledTotalBlocks) {
+            shakeModalImage();
+            return;
+        }
+        
+        await navigateToPosition(newPosition);
+        return;
+    }
+    
     const allLinks = Array.from(document.querySelectorAll('.image-link'));
     
     if (allLinks.length === 0) return;
     
-    // If no current link (e.g., after shuffle), start from first or last block
+    // If no current link, start from first or last block
     if (!currentModalLink) {
         if (direction === 'prev') {
-            openModalFromLink(allLinks[allLinks.length - 1]); // Go to last
+            openModalFromLink(allLinks[allLinks.length - 1]);
         } else {
-            openModalFromLink(allLinks[0]); // Go to first
+            openModalFromLink(allLinks[0]);
         }
         return;
     }
 
     const currentIndex = allLinks.indexOf(currentModalLink);
 
-    // If current link not found in DOM (shuffled from API), go to first/last
+    // If current link not found in DOM, go to first/last
     if (currentIndex === -1) {
         if (direction === 'prev') {
             openModalFromLink(allLinks[allLinks.length - 1]);
