@@ -186,6 +186,45 @@ function handleThumbnailClick(event) {
 
     // 3. Update the main display area
     displayBlockDetails(linkElement);
+    
+    // 4. Update URL hash for permalink
+    const blockId = linkElement.dataset.blockId;
+    if (blockId) {
+        window.history.replaceState(null, '', `#${blockId}`);
+    }
+}
+
+/**
+ * Fetches a block by ID from the API and displays it in the gallery view.
+ */
+async function fetchBlockByIdForGallery(blockId) {
+    try {
+        const response = await fetch(`/api/block-by-id?id=${blockId}&channel=my-rock-slop`);
+        if (!response.ok) throw new Error('Failed to fetch block');
+        
+        const { block } = await response.json();
+        const tempLink = Object.assign(document.createElement('a'), {
+            className: 'gallery-thumbnail-link',
+            dataset: {
+                originalUrl: block.originalUrl,
+                thumbUrl: block.thumbUrl || block.originalUrl,
+                title: block.title,
+                content: encodeURIComponent(JSON.stringify('')),
+                blockId: block.id
+            }
+        });
+        
+        displayBlockDetails(tempLink);
+        
+        const actualThumbnail = document.querySelector(`[data-block-id="${blockId}"] .gallery-thumbnail-link`);
+        if (actualThumbnail) {
+            actualThumbnail.classList.add('selected-thumbnail');
+            actualThumbnail.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    } catch (error) {
+        console.error('Error fetching block by ID:', error);
+        displayFallbackMessage("Block Not Found", "The requested block could not be loaded.");
+    }
 }
 
 // ----------------------------------------------------------------------
@@ -207,20 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get the main scrollable container
     mainScrollContent = document.getElementById('main-scroll-content');
     
-    // 2. Format the last updated date
+    // Format last updated date
     const lastUpdatedElement = document.getElementById('last-updated-date');
-    if (lastUpdatedElement) {
-        const isoString = lastUpdatedElement.dataset.timestamp;
-        const date = new Date(isoString);
-        const formattedDate = date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
+    if (lastUpdatedElement?.dataset.timestamp) {
+        const date = new Date(lastUpdatedElement.dataset.timestamp);
+        lastUpdatedElement.textContent = date.toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
         });
-        lastUpdatedElement.textContent = formattedDate;
     }
 
     // 3. Attach click listeners to all existing thumbnails
@@ -229,18 +262,33 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', handleThumbnailClick);
     });
 
-    // 4. Display the first block on load
-    if (thumbnails.length > 0) {
-        try {
-            // Display the first block details
-            displayBlockDetails(thumbnails[0]); 
-            thumbnails[0].classList.add('selected-thumbnail');
-        } catch (e) {
-            console.error("CRITICAL ERROR: Failed to display the first block.", e);
-            displayFallbackMessage("Critical Error Loading Block", "The first mineral's data is corrupted or the display failed. Check console."); 
-        }
-    } else {
+    // Check for URL hash and display corresponding block, or display first block
+    if (!thumbnails.length) {
         displayFallbackMessage("No Blocks Found", "This Are.na channel appears to be empty.");
+        return;
+    }
+    
+    const blockId = window.location.hash.substring(1);
+    let blockToDisplay = blockId 
+        ? document.querySelector(`[data-block-id="${blockId}"] .gallery-thumbnail-link`)
+        : null;
+    
+    if (blockId && !blockToDisplay) {
+        fetchBlockByIdForGallery(blockId);
+        return;
+    }
+    
+    if (!blockToDisplay) blockToDisplay = thumbnails[0];
+    
+    try {
+        displayBlockDetails(blockToDisplay);
+        blockToDisplay.classList.add('selected-thumbnail');
+        if (!blockId && blockToDisplay.dataset.blockId) {
+            window.history.replaceState(null, '', `#${blockToDisplay.dataset.blockId}`);
+        }
+    } catch (e) {
+        console.error("CRITICAL ERROR: Failed to display the block.", e);
+        displayFallbackMessage("Critical Error Loading Block", "The mineral's data is corrupted or the display failed. Check console.");
     }
 
     // 5. Setup Infinite Scroll Listener
@@ -270,14 +318,16 @@ function renderBlocks(blocks) {
     const newLinkElements = []; // To store the new anchor elements for click listeners
 
     blocks.forEach(block => {
-        // Only process image blocks with valid image data
-        if (block.image && block.image.thumb) {
+        // Only process image blocks with valid image data and ID
+        if (block.image && block.image.thumb && block.id) {
             const div = document.createElement('div');
             div.className = 'channel-block-thumbnail';
+            div.setAttribute('data-block-id', block.id);
 
             const a = document.createElement('a');
             a.href = "javascript:void(0);";
             a.className = 'gallery-thumbnail-link';
+            a.setAttribute('data-block-id', block.id);
 
             a.dataset.originalUrl = block.image.original.url;
             a.dataset.thumbUrl = block.image.thumb.url;
@@ -294,7 +344,7 @@ function renderBlocks(blocks) {
             a.appendChild(img);
             div.appendChild(a);
             fragment.appendChild(div);
-            newLinkElements.push(a); 
+            newLinkElements.push(a);
         }
     });
 

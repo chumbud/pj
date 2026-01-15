@@ -71,8 +71,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <p></p>
     <div id="channel-content" class="channel-content">
-        <% channelBlocks.forEach(block => { %>
-            <div class="channel-block">
+        <% channelBlocks.forEach((block, index) => { %>
+            <div class="channel-block" data-block-id="<%= block.id %>">
                 <% if (block.image && block.image.original) { %>
                     <%
                         const sourceUrl = block.source && block.source.url ? block.source.url : '#';
@@ -80,10 +80,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <a href="javascript:void(0);" class="image-link"
                        data-original-url="<%= block.image.original.url %>"
                        data-title="<%= block.title || 'Are.na Image Block' %>"
-                       data-source-url="<%= sourceUrl %>">
+                       data-source-url="<%= sourceUrl %>"
+                       data-block-id="<%= block.id %>">
                         <img src="<%= block.image.thumb.url %>"
                              alt="<%= block.title || 'Are.na Image Block' %>"
-                             onerror="this.onerror=null;this.src='https://placehold.co/400x300/F0F0F0/606060?text=Image+Error'">
+                             style="opacity: 0; transition: opacity 0.3s ease-in;"
+                             onload="this.style.opacity='1'"
+                             onerror="this.onerror=null;this.src='https://placehold.co/400x300/F0F0F0/606060?text=Image+Error';this.style.opacity='1'">
                     </a>
                 <% } else if (block.content) { %>
                     <div class="block-content">
@@ -208,6 +211,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="contact-status" class="contact-status"></div>
     </div>
 </div>
+<script type="module" src="/js/instant-navigation.js"></script>
 <script type="module" src="/js/scrub.js"></script>
 <script type="module" src="/js/lazy-load.js"></script>
 <script type="module" src="/js/thumbnail-toggle.js"></script>

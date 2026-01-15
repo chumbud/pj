@@ -96,17 +96,18 @@
                         <div id="current-page" data-value="<%= currentPage %>" style="display: none;"></div>
                         <div id="last-updated-date" data-timestamp="<%= updatedAt %>" style="display: none;"></div>
 
-                        <% channelBlocks.forEach(function(block) { %>
+                        <% channelBlocks.forEach(function(block, index) { %>
                             <% if (block.image && block.image.original && block.image.thumb) { %>
-                            <div class="channel-block-thumbnail">
+                            <div class="channel-block-thumbnail" data-block-id="<%= block.id %>">
                                 <a href="javascript:void(0);" 
                                 class="gallery-thumbnail-link" 
                                 data-original-url="<%= block.image.original.url %>"
                                 data-thumb-url="<%= block.image.thumb.url %>"
                                 data-title="<%= block.title %>"
                                 data-content="<%- encodeURIComponent(JSON.stringify(block.description)) %>"
+                                data-block-id="<%= block.id %>"
                                 >
-                                    <img src="<%= block.image.thumb.url %>" alt="<%= block.title %>" onerror="this.onerror=null; this.src='https://placehold.co/100x75?text=Error';">
+                                    <img src="<%= block.image.thumb.url %>" alt="<%= block.title %>" style="opacity: 0; transition: opacity 0.3s ease-in;" onload="this.style.opacity='1'" onerror="this.onerror=null; this.src='https://placehold.co/100x75?text=Error';this.style.opacity='1'">
                                 </a>
                             </div>
                             <% } %>
@@ -194,6 +195,7 @@ font-weight: bold;"></div>
         <div id="contact-status" class="contact-status"></div>
     </div>
 </div>
+    <script type="module" src="/js/instant-navigation.js"></script>
     <script type="module" src="/js/scrub.js"></script>
     <script type="module" src="/js/gallery-view.js"></script>
     <script type="module" src="/js/thumbnail-toggle.js"></script>

@@ -224,6 +224,40 @@ app.get('/api/block-at-position', async (req, res) => {
     }
 });
 
+// Fetch a block by ID
+app.get('/api/block-by-id', async (req, res) => {
+    const apiUrlSlug = req.query.channel || ARENA_CHANNEL_SLUG;
+    const blockId = req.query.id;
+    
+    if (!blockId) {
+        return res.status(400).json({ error: 'Block ID is required' });
+    }
+    
+    try {
+        // Fetch block directly from Are.na API by ID
+        const blockUrl = `https://api.are.na/v2/blocks/${blockId}`;
+        const blockResponse = await axios.get(blockUrl);
+        const block = blockResponse.data;
+        
+        if (!block.image || !block.image.original) {
+            return res.status(404).json({ error: 'Block is not an image block' });
+        }
+        
+        res.json({
+            block: {
+                id: block.id,
+                originalUrl: block.image.original.url,
+                thumbUrl: block.image.thumb ? block.image.thumb.url : null,
+                title: block.title || 'Are.na Image Block',
+                sourceUrl: (block.source && block.source.url) ? block.source.url : '#',
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching block by ID:', error.message);
+        res.status(500).json({ error: 'Failed to fetch block' });
+    }
+});
+
 // This route responds with pure JSON data, which the client-side JavaScript will use to append content.
 app.get('/api/blocks', async (req, res) => {
     // 1. Extract the channel slug from the query string, defaulting to the environment variable

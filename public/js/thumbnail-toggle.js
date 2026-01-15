@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isSmall = false;
     let isGrid = false;
+    let isUpdatingToggle = false; // Flag to prevent recursive updates
+    let lastAspectRatio = null; // Track last aspect ratio to detect threshold crossings
 
     /**
      * Find the thumbnail element closest to the center of the viewport
@@ -91,36 +93,121 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Set the thumbnail size toggle state
+     * @param {boolean} shouldBeSmall - true for smaller, false for larger
+     * @param {boolean} preserveScroll - whether to preserve scroll position (default: true)
+     */
+    function setThumbnailSize(shouldBeSmall, preserveScroll = true) {
+        if (isSmall === shouldBeSmall) return; // Already in the desired state
+        
+        // Find anchor element before layout change
+        const anchor = preserveScroll ? getAnchorElement() : null;
+        
+        isSmall = shouldBeSmall;
+        
+        // Toggle the class on the container and animate slider
+        if (isSmall) {
+            container.classList.add('thumbnails-small');
+            toggleBtn.classList.remove('active-right');
+            smallerOption?.classList.add('active');
+            largerOption?.classList.remove('active');
+        } else {
+            container.classList.remove('thumbnails-small');
+            toggleBtn.classList.add('active-right');
+            smallerOption?.classList.remove('active');
+            largerOption?.classList.add('active');
+        }
+
+        // Restore scroll position to keep anchor element in place
+        if (preserveScroll) {
+            restoreScrollPosition(anchor);
+        }
+    }
+
+    /**
+     * Update toggle based on viewport aspect ratio (minus nav)
+     * Toggles to smaller when ratio goes under 1:1
+     * Only toggles when crossing the threshold, not on every resize
+     */
+    function updateToggleBasedOnViewport() {
+        // Prevent recursive calls
+        if (isUpdatingToggle) return;
+        
+        // Get nav element to calculate available viewport dimensions
+        const nav = document.querySelector('.nav');
+        const navWidth = nav && window.getComputedStyle(nav).display !== 'none' ? nav.offsetWidth : 0;
+        
+        // Calculate viewport dimensions minus nav
+        const viewportWidth = window.innerWidth - navWidth;
+        const viewportHeight = window.innerHeight;
+        const aspectRatio = viewportWidth / viewportHeight;
+        const threshold = 1; // 1:1 ratio threshold
+        
+        // Toggle to smaller when ratio goes under 4:3
+        const shouldBeSmall = aspectRatio < threshold;
+        
+        // If already in the correct state, just update lastAspectRatio and return
+        if (isSmall === shouldBeSmall) {
+            lastAspectRatio = aspectRatio;
+            return;
+        }
+        
+        // Only toggle if we've crossed the threshold (not on first check unless needed)
+        if (lastAspectRatio !== null) {
+            const wasBelowThreshold = lastAspectRatio < threshold;
+            const isBelowThreshold = aspectRatio < threshold;
+            
+            // Only toggle if we crossed the threshold
+            if (wasBelowThreshold === isBelowThreshold) {
+                // Same side of threshold, don't toggle
+                lastAspectRatio = aspectRatio;
+                return;
+            }
+        }
+        
+        // We crossed the threshold (or this is the first check), update the toggle
+        isUpdatingToggle = true;
+        setThumbnailSize(shouldBeSmall, false); // Don't preserve scroll on automatic resize
+        // Reset flag after a short delay to allow layout to settle
+        setTimeout(() => {
+            isUpdatingToggle = false;
+        }, 200);
+        
+        lastAspectRatio = aspectRatio;
+    }
+
     // Handle size toggle button
     if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => {
-            // Find anchor element before layout change
-            const anchor = getAnchorElement();
-            
-            isSmall = !isSmall;
-            
-            // Toggle the class on the container and animate slider
-            if (isSmall) {
-                container.classList.add('thumbnails-small');
-                toggleBtn.classList.remove('active-right');
-                smallerOption?.classList.add('active');
-                largerOption?.classList.remove('active');
-            } else {
-                container.classList.remove('thumbnails-small');
-                toggleBtn.classList.add('active-right');
-                smallerOption?.classList.remove('active');
-                largerOption?.classList.add('active');
-            }
-
-            // Restore scroll position to keep anchor element in place
-            restoreScrollPosition(anchor);
-        });
-
-        // Initialize: larger (right) is active by default
+        // Initialize button state to larger (default)
         if (largerOption) {
             largerOption.classList.add('active');
             toggleBtn.classList.add('active-right');
         }
+        
+        toggleBtn.addEventListener('click', () => {
+            isUpdatingToggle = true;
+            setThumbnailSize(!isSmall, true);
+            
+            // Reset lastAspectRatio on manual toggle so it doesn't interfere
+            lastAspectRatio = null;
+            
+            // Reset flag after a delay
+            setTimeout(() => {
+                isUpdatingToggle = false;
+            }, 300);
+        });
+
+        // Initialize based on viewport aspect ratio
+        updateToggleBasedOnViewport();
+
+        // Watch for window resize to update toggle based on viewport
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            if (isUpdatingToggle) return; // Skip if we're already updating
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(updateToggleBasedOnViewport, 100);
+        });
     }
 
     // Handle grid toggle button

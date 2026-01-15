@@ -99,22 +99,26 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', handleImageClick);
     });
 
+    // Check for URL hash and open corresponding modal
+    const blockId = window.location.hash.substring(1);
+    if (blockId) {
+        const blockElement = document.querySelector(`[data-block-id="${blockId}"] .image-link`);
+        if (blockElement) {
+            blockElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => openModalFromLink(blockElement), 500);
+        } else {
+            fetchBlockById(blockId);
+        }
+    }
+
+    // Format last updated date
     const lastUpdatedElement = document.getElementById('last-updated-date');
-    if (lastUpdatedElement) {
-        const isoString = lastUpdatedElement.dataset.timestamp;
-        const date = new Date(isoString);
-        
-        // Format the date for display (e.g., "Oct 26, 2025 at 10:30 PM")
-        const formattedDate = date.toLocaleDateString('en-US', {
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
+    if (lastUpdatedElement?.dataset.timestamp) {
+        const date = new Date(lastUpdatedElement.dataset.timestamp);
+        lastUpdatedElement.textContent = date.toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', hour12: true
         });
-        
-        lastUpdatedElement.textContent = formattedDate;
     }
 });
 
@@ -141,12 +145,18 @@ function openModalFromLink(linkElement) {
     const originalUrl = linkElement.dataset.originalUrl;
     const title = linkElement.dataset.title;
     const sourceUrl = linkElement.dataset.sourceUrl;
+    const blockId = linkElement.dataset.blockId;
 
     if (originalUrl) {
         currentModalLink = linkElement; // Track current link for keyboard nav
         shuffledPosition = null; // Clear shuffle position - back to local nav
         shuffledTotalBlocks = null;
-        openModal(originalUrl, title, sourceUrl);
+        openModal(originalUrl, title, sourceUrl, blockId);
+        
+        // Update URL hash for permalink
+        if (blockId) {
+            window.history.replaceState(null, '', `#${blockId}`);
+        }
     }
 }
 
@@ -155,8 +165,9 @@ function openModalFromLink(linkElement) {
  * @param {string} url - The URL of the original image.
  * @param {string} title - The title of the image (for alt text/display).
  * @param {string} sourceUrl - The external link URL for the block's source.
+ * @param {string} blockId - The ID of the block for permalink.
  */
-function openModal(url, title, sourceUrl) {
+function openModal(url, title, sourceUrl, blockId) {
     const modal = document.getElementById('full-image-modal');
     const modalImg = document.getElementById('modal-image');
     const modalTitleElement = document.getElementById('modal-title');
@@ -209,6 +220,38 @@ function closeModal() {
         // Clear the image source when closing the modal to save memory
         modalImg.src = '';
         currentModalLink = null; // Clear tracked link
+        
+        // Clear URL hash when closing modal
+        if (window.location.hash) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+    }
+}
+
+/**
+ * Fetches a block by ID from the API and opens it in the modal.
+ */
+async function fetchBlockById(blockId) {
+    try {
+        const isMinerals = window.location.pathname.includes('/minerals');
+        const apiUrl = `/api/block-by-id?id=${blockId}${isMinerals ? '&channel=my-rock-slop' : ''}`;
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) throw new Error('Failed to fetch block');
+        
+        const { block } = await response.json();
+        currentModalLink = shuffledPosition = shuffledTotalBlocks = null;
+        openModal(block.originalUrl, block.title, block.sourceUrl, block.id);
+    } catch (error) {
+        console.error('Error fetching block by ID:', error);
+        const modal = document.getElementById('full-image-modal');
+        const placeholder = document.getElementById('modal-placeholder');
+        if (modal && placeholder) {
+            Object.assign(modal.style, { display: 'flex' });
+            document.body.style.overflow = 'hidden';
+            Object.assign(placeholder.style, { display: 'flex' });
+            placeholder.innerHTML = 'Block not found';
+        }
     }
 }
 
@@ -524,15 +567,17 @@ function renderBlocks(blocks) {
     const newBlockDivs = []; // Store new block divs for animation delay
 
     blocks.forEach(block => {
-        if (block.image && block.image.original) {
+        if (block.image && block.image.original && block.id) {
             // Create the main block div
             const blockDiv = document.createElement('div');
             blockDiv.className = 'channel-block';
+            blockDiv.setAttribute('data-block-id', block.id);
 
             // Create the clickable anchor tag
             const link = document.createElement('a');
             link.href = 'javascript:void(0);';
             link.className = 'image-link';
+            link.setAttribute('data-block-id', block.id);
             link.dataset.originalUrl = block.image.original.url;
             link.dataset.title = block.title || 'Are.na Image Block';
 
@@ -540,11 +585,14 @@ function renderBlocks(blocks) {
 
             // Create the image element
             const img = document.createElement('img');
+            img.style.cssText = 'opacity: 0; transition: opacity 0.3s ease-in';
             img.src = block.image.thumb.url;
             img.alt = block.title || 'Are.na Image Block';
+            img.onload = () => img.style.opacity = '1';
             img.onerror = function() {
                 this.onerror = null;
                 this.src = 'https://placehold.co/400x300/F0F0F0/606060?text=Image+Error';
+                this.style.opacity = '1';
             };
 
             // Assemble the block: link -> img, blockDiv -> link
@@ -586,22 +634,13 @@ function renderBlocks(blocks) {
  * Fetches the next page of blocks from the server API.
  */
 async function fetchMoreBlocks() {
-    if (isFetching || currentPage >= totalPages) {
-        // If already fetching or at the end of content, do nothing.
-        return;
-    }
-
-    const nextPage = currentPage + 1;
-    
-    // Prevent fetching the same page twice
-    if (fetchedPages.has(nextPage)) {
-        currentPage = nextPage;
+    if (isFetching || currentPage >= totalPages || fetchedPages.has(currentPage + 1)) {
+        if (fetchedPages.has(currentPage + 1)) currentPage++;
         return;
     }
 
     isFetching = true;
-    currentPage = nextPage;
-    fetchedPages.add(currentPage); // Mark this page as fetched
+    fetchedPages.add(++currentPage);
     const loader = document.getElementById('loading-spinner');
 
     // Show loading indicator
@@ -646,10 +685,7 @@ async function fetchMoreBlocks() {
  * Checks if the user has scrolled near the bottom of the page.
  */
 function handleScroll() {
-    const scrollThreshold = 300; // Load when user is 300px from the bottom
-
-    // Check if we are near the bottom of the document
-    if ((window.innerHeight + window.scrollY + scrollThreshold) >= document.body.offsetHeight) {
+    if ((window.innerHeight + window.scrollY + 300) >= document.body.offsetHeight) {
         fetchMoreBlocks();
     }
 }
