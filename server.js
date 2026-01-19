@@ -8,6 +8,47 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const ARENA_CHANNEL_SLUG = process.env.ARENA_CHANNEL_SLUG;
 
+// Simple in-memory rate limiting for contact form
+const contactRateLimit = new Map();
+const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+const RATE_LIMIT_MAX = 3; // Max 3 submissions per 15 minutes per IP
+
+function getClientIP(req) {
+    return req.headers['x-forwarded-for']?.split(',')[0] || 
+           req.headers['x-real-ip'] || 
+           req.connection.remoteAddress || 
+           req.socket.remoteAddress ||
+           'unknown';
+}
+
+function checkRateLimit(ip) {
+    // Skip rate limiting for localhost during development
+    if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1' || ip === 'unknown') {
+        return true;
+    }
+    
+    const now = Date.now();
+    const record = contactRateLimit.get(ip);
+    
+    if (!record) {
+        contactRateLimit.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+        return true;
+    }
+    
+    if (now > record.resetTime) {
+        // Reset window
+        contactRateLimit.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+        return true;
+    }
+    
+    if (record.count >= RATE_LIMIT_MAX) {
+        return false;
+    }
+    
+    record.count++;
+    return true;
+}
+
 // Parse JSON bodies
 app.use(express.json());
 
@@ -287,7 +328,19 @@ app.get('/', (req, res) => {
 
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
-    const { email, message } = req.body;
+    const { email, message, website } = req.body;
+    
+    // Honeypot check - if website field is filled, it's a bot
+    if (website) {
+        // Silently reject - don't alert bots
+        return res.status(200).json({ success: true, message: 'Email sent successfully' });
+    }
+    
+    // Rate limiting
+    const clientIP = getClientIP(req);
+    if (!checkRateLimit(clientIP)) {
+        return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+    }
     
     if (!email || !message) {
         return res.status(400).json({ error: 'Email and message are required' });
@@ -299,7 +352,34 @@ app.post('/api/contact', async (req, res) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
     
+    // Additional spam checks
+    // Reject messages that are suspiciously short or contain only spam-like patterns
+    const messageLength = message.trim().length;
+    if (messageLength < 3) {
+        return res.status(400).json({ error: 'Message is too short' });
+    }
+    
+    // Check for common spam patterns (all caps, excessive special chars, etc.)
+    const spamPatterns = [
+        /^[A-Z\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{20,}$/, // All caps with special chars
+        /(.)\1{10,}/, // Repeated characters (like "aaaaaaaaaa")
+    ];
+    
+    if (spamPatterns.some(pattern => pattern.test(message))) {
+        return res.status(400).json({ error: 'Invalid message format' });
+    }
+    
     try {
+        // Check if Gmail credentials are configured
+        if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+            // In development, log the message instead of sending email
+            console.log('=== CONTACT FORM SUBMISSION (Development Mode) ===');
+            console.log('From:', email);
+            console.log('Message:', message);
+            console.log('================================================');
+            return res.json({ success: true, message: 'Email sent successfully (logged in development)' });
+        }
+        
         // Create transporter with Gmail
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -327,7 +407,11 @@ app.post('/api/contact', async (req, res) => {
         res.json({ success: true, message: 'Email sent successfully' });
     } catch (error) {
         console.error('Error sending email:', error);
-        res.status(500).json({ error: 'Failed to send email' });
+        // Provide more helpful error message
+        const errorMessage = error.code === 'EAUTH' 
+            ? 'Email authentication failed. Please check your Gmail credentials.'
+            : 'Failed to send email';
+        res.status(500).json({ error: errorMessage });
     }
 });
 
