@@ -464,6 +464,27 @@ app.get('/api/yippee', (req, res) => {
     }
 });
 
+// Get user location (proxy to avoid CORS)
+app.get('/api/location', async (req, res) => {
+    try {
+        const response = await axios.get('https://ipapi.co/json/');
+        const data = response.data;
+        
+        if (data.city && data.region && data.country_code) {
+            res.json({
+                city: data.city,
+                region: data.region,
+                countryCode: data.country_code
+            });
+        } else {
+            res.json({ error: 'Location data not available' });
+        }
+    } catch (error) {
+        console.error('Error fetching location:', error.message);
+        res.status(500).json({ error: 'Failed to fetch location' });
+    }
+});
+
 // Increment counter
 app.post('/api/yippee/increment', (req, res) => {
     initCounterFile();

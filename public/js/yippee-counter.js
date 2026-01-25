@@ -717,15 +717,18 @@ class YippeeCounter {
     
     async getUserLocation() {
         try {
-            // Use a free geolocation API to get location from IP
-            const response = await fetch('https://ipapi.co/json/');
+            // Use backend proxy to avoid CORS issues
+            const response = await fetch('/api/location');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
             
-            if (data.city && data.region && data.country_code) {
+            if (data.city && data.region && data.countryCode) {
                 this.currentLocation = {
                     city: data.city,
                     region: data.region,
-                    countryCode: data.country_code
+                    countryCode: data.countryCode
                 };
             }
         } catch (error) {
