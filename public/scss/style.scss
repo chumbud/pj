@@ -924,7 +924,7 @@ a {
         background-color: white;
         border: 1px solid $color-text;
         margin-top: 2rem;
-        width: fit-content;
+        width: 100%;
         gap: 0.5rem;
         position: relative;
 
@@ -1091,7 +1091,6 @@ a {
         left: unset;
         bottom: unset;
         box-shadow: none;
-        margin-top: 2rem;
         width: 100%;
         max-width: 100%;
         background-color: white;
@@ -1664,8 +1663,14 @@ a {
     }
 
     .contact-btn {
-        flex-basis: 100%;
-        margin-top: 0.5rem;
+        color: blue;
+        margin-top: 0;
+        text-decoration-color: blue;
+
+        &:hover {
+            color: $color-magenta;
+            text-decoration-color: $color-magenta;
+        }
     }
 
     a {
