@@ -167,6 +167,8 @@ class YippeeCounter {
         const root = document.documentElement;
         const mediaQuery = window.matchMedia('(max-width: 76.8rem)');
         const gapPx = 12;
+        let resizeObserver = null;
+        let resizeHandler = null;
 
         const updateOffset = () => {
             if (!mediaQuery.matches) {
@@ -189,19 +191,48 @@ class YippeeCounter {
             }
         };
 
-        updateOffset();
+        const enableMobileOffset = () => {
+            updateOffset();
+
+            if (!resizeHandler) {
+                resizeHandler = () => updateOffset();
+                window.addEventListener('resize', resizeHandler);
+            }
+
+            if (!resizeObserver && window.ResizeObserver) {
+                resizeObserver = new ResizeObserver(updateOffset);
+                resizeObserver.observe(likeBubble);
+            }
+        };
+
+        const disableMobileOffset = () => {
+            root.style.removeProperty('--yippee-mobile-offset');
+
+            if (resizeHandler) {
+                window.removeEventListener('resize', resizeHandler);
+                resizeHandler = null;
+            }
+
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+                resizeObserver = null;
+            }
+        };
+
+        const handleBreakpointChange = () => {
+            if (mediaQuery.matches) {
+                enableMobileOffset();
+            } else {
+                disableMobileOffset();
+            }
+        };
+
+        handleBreakpointChange();
 
         if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', updateOffset);
+            mediaQuery.addEventListener('change', handleBreakpointChange);
         } else if (mediaQuery.addListener) {
-            mediaQuery.addListener(updateOffset);
-        }
-
-        window.addEventListener('resize', updateOffset);
-
-        if (window.ResizeObserver) {
-            const observer = new ResizeObserver(updateOffset);
-            observer.observe(likeBubble);
+            mediaQuery.addListener(handleBreakpointChange);
         }
     }
     
