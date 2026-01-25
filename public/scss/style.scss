@@ -6,6 +6,10 @@ $breakpoint-tablet: 76.8rem;
 $breakpoint-big: 144rem;
 $nav-width: 24rem;
 
+::root {
+    font-size: 2vw;
+}
+
 html {
     font-size: 2vw;
     scroll-behavior: smooth;
@@ -50,20 +54,15 @@ body {
         box-sizing: border-box;
     }
 
-    font-family: "Funnel Sans",
+    font-family: "Onest",
     sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
-    letter-spacing: -1px;
-
-    @media (min-width: $breakpoint-tablet) {
-        letter-spacing: -1.5px;
-    }
 }
 
 a {
     color: $color-magenta; 
-    font-family: "Funnel Sans";
+    font-family: "Onest";
     font-size: 2.0rem;
     font-style: normal;
     font-weight: 400;
@@ -192,13 +191,11 @@ a {
     p {
         font-size: 3.5rem;
         max-width: 50.0rem;
+        font-weight: 500;
+        line-height: 1.2;
         margin: 0;
         @media (min-width: $breakpoint-tablet) {
             font-size: 2.5rem;
-        }
-
-        @media (min-width: $breakpoint-tablet) {
-            font-size: 3.5rem;
         }
     }
 
@@ -488,7 +485,6 @@ a {
 
 .last-updated {
     font-size: 2rem;
-    letter-spacing: -1px;
     margin: 1rem -1rem -1rem -1rem;
     padding: 1rem;
     border-top: 1px solid black;
@@ -535,7 +531,6 @@ a {
     @media (min-width: $breakpoint-tablet) {
         position: absolute;
         bottom: 2rem;
-        left: 15rem;
         font-size: 2rem;
         transform: none;
     }
@@ -565,7 +560,6 @@ a {
         line-height: 1;
     }
     span {
-        letter-spacing: -2px;
         font-size: 3rem;
         @media (min-width: $breakpoint-tablet) {
             font-size: 2rem;
@@ -632,7 +626,6 @@ a {
 
     a {
         font-size: 1.25rem;
-        letter-spacing: 0;
         color: black;
         text-decoration: none;
         padding: .5rem 1rem;
@@ -705,13 +698,12 @@ a {
     }
 
     .someone-yippeed-message {
-        font-family: "Funnel Sans";
+        font-family: "Onest";
         font-size: 1.25rem;
         color: $color-magenta;
         opacity: 0;
         position: absolute;
         top: -1rem;
-        letter-spacing: 0;
         pointer-events: none;
         transition: opacity 0.1s ease, top 0.5s ease;
         
@@ -724,12 +716,12 @@ a {
     .yippee-ticker {
         display: flex;
         font-size: 2.5rem;
-        letter-spacing: 0.2rem;
         color: black;
         border-radius: 0.5rem;
         justify-content: space-between;
         overflow: hidden;
         width: 100%;
+        gap: 0.25rem;
         position: relative;
         min-width: 200px;
     }
@@ -738,11 +730,12 @@ a {
     .ticker-digit {
         display: inline-block;
         text-align: center;
-        padding: 0.25rem .75rem;
+        padding: 0.25rem .5rem;
         font-family: 'Roboto Mono', monospace;
         border: 1px solid rgba(black, .1);
         color: black;
         border-radius: 0.5rem;
+        width: 100%;
         line-height: 1;
         transition: background-color 0.3s ease, color 0.3s ease;
         position: relative;
@@ -770,7 +763,6 @@ a {
         border: 1px solid rgba(black, .1);
 
         * {
-            letter-spacing: 0;
             line-height: 1;
         }
         
@@ -838,7 +830,6 @@ a {
             font-size: 1rem;
             font-weight: 400;
             color: black;
-            letter-spacing: 0;
             line-height: 1;
             padding: 1.5rem 0;
             display: flex;
@@ -929,7 +920,6 @@ a {
     .nav .yippee-ticker {
         min-width: 0;
         font-size: 2rem;
-        letter-spacing: 0.15rem;
         gap: 0.5rem;
     }
 
@@ -1026,7 +1016,6 @@ a {
 
 .inspiration-about {
     font-size: 2.5rem;
-    letter-spacing: -1px;
     color: black;
     padding: 1rem;
     @media (min-width: $breakpoint-tablet) {
@@ -1046,7 +1035,6 @@ a {
     }
 
     span {
-        letter-spacing: 0px;
         font-size: 1.5rem;
     }
     .source {
@@ -1184,8 +1172,6 @@ a {
 .thumbnail-grid-btn {
 
     .option {
-        letter-spacing: -1px;
-
         &:hover {
             text-decoration: underline;
         }
@@ -1205,7 +1191,7 @@ a {
     font-size: 1.75rem;
     border: none;
     cursor: pointer;
-    font-family: "Funnel Sans", sans-serif;
+    font-family: "Onest", sans-serif;
     width: 15rem;
     align-items: center;
     justify-content: space-between;
@@ -1299,11 +1285,10 @@ a {
     padding: 1.25rem 2rem;
     border-radius: 3rem;
     font-size: 1.75rem; 
-    letter-spacing: -1px;
     text-align: right;
     border: none;
     cursor: pointer;
-    font-family: "Funnel Sans", sans-serif;
+    font-family: "Onest", sans-serif;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
     @media (min-width: $breakpoint-tablet) {
@@ -1442,7 +1427,6 @@ a {
 
     #modal-title {
         font-size: 2rem;
-        letter-spacing: -1px;
         margin: 0;
         text-align: center;
     }
@@ -1455,7 +1439,6 @@ a {
     flex-wrap: wrap;
     gap: .5rem;
     justify-content: flex-start;
-    background-color: white;
 
     @media (min-width: $breakpoint-tablet) {
         display: none;
@@ -1464,6 +1447,10 @@ a {
     .contact-btn {
         flex-basis: 100%;
         margin-top: 0.5rem;
+    }
+
+    a {
+        background-color: $color-background;
     }
 }
 
@@ -1511,7 +1498,6 @@ a {
     backdrop-filter: blur(4px);
 
     & * {
-        letter-spacing: -.5px;
         font-size: 2.5rem;
     }
 }
@@ -1605,7 +1591,6 @@ a {
     text-align: right;
     font-size: 1.25rem;
     opacity: 0.75;
-    letter-spacing: 0px;
     margin-top: .5rem;
     margin-bottom: 0;
     padding: 0 1rem 0 2rem;

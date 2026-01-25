@@ -1,0 +1,210 @@
+/* Commission Board Styles */
+.commission-board {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.board-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.board-title-section {
+  flex: 1;
+}
+
+.board-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.board-title h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, var(--text-primary), var(--zzz-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title-icon {
+  color: var(--zzz-cyan);
+  filter: drop-shadow(0 0 8px var(--zzz-cyan));
+}
+
+.title-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(255, 204, 0, 0.1);
+  border: 1px solid var(--zzz-yellow);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--zzz-yellow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.title-badge svg {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.board-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+
+.new-commission-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  white-space: nowrap;
+}
+
+/* Board Controls */
+.board-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--zzz-panel);
+  border: 1px solid var(--zzz-border);
+}
+
+.search-box {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  background: var(--zzz-dark);
+  border: 1px solid var(--zzz-border);
+  transition: all var(--transition-fast);
+}
+
+.search-box:focus-within {
+  border-color: var(--zzz-cyan);
+}
+
+.search-box svg {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.search-box:focus-within svg {
+  color: var(--zzz-cyan);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+}
+
+.search-input:focus {
+  box-shadow: none;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--zzz-dark);
+  border: 1px solid var(--zzz-border);
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-tab:hover {
+  border-color: var(--zzz-cyan);
+  color: var(--text-primary);
+}
+
+.filter-tab.active {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--zzz-cyan);
+  color: var(--zzz-cyan);
+}
+
+.filter-tab .count {
+  padding: 2px 6px;
+  background: var(--zzz-panel);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+}
+
+.filter-tab.active .count {
+  background: var(--zzz-cyan);
+  color: var(--zzz-black);
+}
+
+/* Commissions Grid */
+.commissions-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--space-md);
+  overflow-y: auto;
+  padding-bottom: var(--space-lg);
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl);
+  background: var(--zzz-panel);
+  border: 2px dashed var(--zzz-border);
+  text-align: center;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zzz-dark);
+  border: 2px solid var(--zzz-border);
+  color: var(--text-dim);
+  margin-bottom: var(--space-lg);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.empty-state h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}

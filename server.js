@@ -558,6 +558,229 @@ app.post('/api/yippee/increment', (req, res) => {
     }
 });
 
+// OSRS Stats Cache
+const osrsStatsCache = { data: null, timestamp: 0 };
+const OSRS_CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+const OSRS_USERNAME = process.env.OSRS_USERNAME || 'spoooji';
+const RUNESCAPE_STATS_FILE = path.join(__dirname, 'runescape-stats.json');
+
+
+// Initialize runescape stats file if it doesn't exist
+function initRunescapeStatsFile() {
+    if (!fs.existsSync(RUNESCAPE_STATS_FILE)) {
+        fs.writeFileSync(RUNESCAPE_STATS_FILE, JSON.stringify({ timestamp: Date.now(), skills: {} }), 'utf8');
+    }
+}
+
+// OSRS Stats API Endpoint
+app.get('/api/osrs/stats', async (req, res) => {
+    try {
+        // Check cache first
+        if (Date.now() - osrsStatsCache.timestamp < OSRS_CACHE_TTL && osrsStatsCache.data) {
+            return res.json(osrsStatsCache.data);
+        }
+
+        // Fetch current stats with timeout
+        const { getStatsByGamemode } = require('osrs-json-hiscores');
+        const statsResponse = await Promise.race([
+            getStatsByGamemode(OSRS_USERNAME),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('OSRS API request timeout')), 10000)
+            )
+        ]);
+        
+        // The package returns stats directly as an object with skill names as keys
+        // If it's already in the right format, use it; otherwise wrap it
+        const currentStats = statsResponse?.skills ? statsResponse : { skills: statsResponse || {} };
+        
+        // Debug log in development
+        if (process.env.NODE_ENV === 'development') {
+            console.log('OSRS API response structure:', Object.keys(statsResponse || {}).slice(0, 5));
+        }
+
+        // Read previous stats
+        initRunescapeStatsFile();
+        let previousStats = { timestamp: Date.now(), skills: {} };
+        try {
+            const prevData = fs.readFileSync(RUNESCAPE_STATS_FILE, 'utf8');
+            if (prevData && prevData.trim()) {
+                previousStats = JSON.parse(prevData);
+            }
+        } catch (error) {
+            console.warn('Error reading previous OSRS stats, using empty:', error.message);
+        }
+
+        // Process skills and detect active ones (with XP gains)
+        const skillsList = [
+            'attack', 'strength', 'defence', 'ranged', 'prayer', 'magic',
+            'runecraft', 'construction', 'hitpoints', 'agility', 'herblore',
+            'thieving', 'crafting', 'fletching', 'slayer', 'hunter', 'mining',
+            'smithing', 'fishing', 'cooking', 'firemaking', 'woodcutting', 'farming'
+        ];
+
+        const skillsData = [];
+        const activeSkills = [];
+
+        skillsList.forEach(skillName => {
+            const skill = currentStats.skills && currentStats.skills[skillName] ? currentStats.skills[skillName] : null;
+            if (!skill) return;
+
+            const level = skill.level || 0;
+            const xp = skill.xp || 0;
+            const progress = level / 99;
+            
+            // Check if skill gained XP (active)
+            const prevSkill = previousStats.skills[skillName];
+            const xpGained = prevSkill && prevSkill.xp ? (xp - prevSkill.xp) : 0;
+            const isActive = xpGained > 0 && (Date.now() - previousStats.timestamp) < (48 * 60 * 60 * 1000); // 48 hours
+
+            const skillData = {
+                name: skillName.charAt(0).toUpperCase() + skillName.slice(1),
+                level,
+                xp,
+                rank: skill.rank || 0,
+                progress,
+                xpGained: isActive ? xpGained : 0,
+                active: isActive
+            };
+
+            skillsData.push(skillData);
+            if (isActive) {
+                activeSkills.push(skillData);
+            }
+        });
+
+        // Sort all skills by progress to 99 (descending) for display
+        skillsData.sort((a, b) => b.progress - a.progress);
+        
+        // Sort active skills by progress to 99 (descending)
+        activeSkills.sort((a, b) => b.progress - a.progress);
+        
+        // Get last 5 active skills (for homepage widget)
+        const last5Active = activeSkills.slice(0, 5);
+
+        // Find closest skill to 99 (highest level that's not 99)
+        const closestTo99 = skillsData
+            .filter(s => s.level < 99)
+            .sort((a, b) => b.progress - a.progress)[0] || null;
+
+        // Detect gamemode by checking which endpoint the player exists in
+        // getStatsByGamemode auto-detects, but we need to check manually
+        let gamemode = 'normal';
+        try {
+            const osrsHiscores = require('osrs-json-hiscores');
+            const getStats = osrsHiscores.getStats;
+            
+            if (typeof getStats === 'function') {
+                // Try ironman modes (with short timeout to avoid blocking)
+                const checkMode = async (mode, name) => {
+                    try {
+                        await Promise.race([
+                            getStats(OSRS_USERNAME, mode),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 800))
+                        ]);
+                        return name;
+                    } catch {
+                        return null;
+                    }
+                };
+                
+                // Check in priority order
+                const ultimateCheck = await checkMode('ultimate', 'ultimate_ironman');
+                if (ultimateCheck) {
+                    gamemode = ultimateCheck;
+                } else {
+                    const hardcoreCheck = await checkMode('hardcore', 'hardcore_ironman');
+                    if (hardcoreCheck) {
+                        gamemode = hardcoreCheck;
+                    } else {
+                        const ironmanCheck = await checkMode('ironman', 'ironman');
+                        if (ironmanCheck) {
+                            gamemode = ironmanCheck;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            // If detection fails, default to normal
+            console.warn('Gamemode detection failed, defaulting to normal:', error.message);
+            // Don't throw - just use default
+        }
+
+        // Update stored stats
+        const skillsObj = {};
+        if (currentStats && currentStats.skills) {
+            skillsList.forEach(skillName => {
+                const skill = currentStats.skills[skillName];
+                if (skill) {
+                    skillsObj[skillName] = {
+                        level: skill.level || 0,
+                        xp: skill.xp || 0,
+                        rank: skill.rank || 0
+                    };
+                }
+            });
+        }
+
+        fs.writeFileSync(RUNESCAPE_STATS_FILE, JSON.stringify({
+            timestamp: Date.now(),
+            skills: skillsObj
+        }), 'utf8');
+
+        const responseData = {
+            closestTo99: closestTo99 ? {
+                name: closestTo99.name,
+                level: closestTo99.level,
+                progress: closestTo99.progress,
+                remaining: Math.ceil((99 - closestTo99.level) / 99 * 100)
+            } : null,
+            lastUpdated: Date.now()
+        };
+
+        // Update cache
+        osrsStatsCache.data = responseData;
+        osrsStatsCache.timestamp = Date.now();
+
+        res.json(responseData);
+    } catch (error) {
+        console.error('Error fetching OSRS stats:', error.message);
+        if (error.stack) {
+            console.error('Error stack:', error.stack);
+        }
+        
+        // Return cached data if available, even if expired
+        if (osrsStatsCache.data) {
+            console.log('Returning cached OSRS stats due to error');
+            return res.json({
+                ...osrsStatsCache.data,
+                cached: true,
+                error: 'Using cached data due to API error'
+            });
+        }
+
+        // If no cached data, return a graceful error response
+        // Don't send 500 if connection was reset - send 200 with error
+        const isConnectionError = error.message.includes('timeout') || 
+                                  error.message.includes('ECONNRESET') ||
+                                  error.message.includes('ENOTFOUND') ||
+                                  error.code === 'ECONNRESET';
+        
+        if (isConnectionError) {
+            return res.json({ 
+                error: 'OSRS API temporarily unavailable',
+                closestTo99: null
+            });
+        }
+
+        res.status(500).json({ 
+            error: 'Failed to fetch OSRS stats', 
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);

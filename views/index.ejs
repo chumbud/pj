@@ -26,9 +26,10 @@
     <link rel="icon" href="/img/2.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/games.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 
@@ -96,6 +97,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <a href="https://www.instagram.com/spoooji/" target="_blank">instagram</a>
                 <a href="https://letterboxd.com/spooji/" target="_blank">letterboxd</a>
                 <a href="#" class="contact-btn" id="mobile-contact-btn">send me a message</a>
+            </div>
+            
+            <div class="osrs-widget" id="osrs-widget">
+                <div class="osrs-widget-header">
+                    <span class="widget-title">
+                        <span>runescape tracker</span>
+                        <span class="live-indicator">
+                            <span class="live-dot"></span>
+                            <span class="live-text">LIVE</span>
+                        </span>
+                    </span>
+                </div>
+                <div class="osrs-widget-skill" id="osrs-widget-skill">
+                    <div class="osrs-widget-spinner">
+                        <div class="spinner"></div>
+                        <span>Loading...</span>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -188,5 +207,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/contact.js"></script>
 <script src="/js/yippee-counter.js"></script>
+<script type="module" src="/js/osrs-widget.js"></script>
 </body>
 </html>

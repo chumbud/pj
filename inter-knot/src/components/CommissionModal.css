@@ -1,0 +1,323 @@
+/* Commission Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-lg);
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  background: var(--zzz-panel);
+  border: 1px solid var(--zzz-border);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+}
+
+.modal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--zzz-cyan), var(--zzz-purple), var(--zzz-cyan));
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  background: linear-gradient(180deg, var(--zzz-panel-light), var(--zzz-panel));
+  border-bottom: 1px solid var(--zzz-border);
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.modal-title svg {
+  color: var(--zzz-cyan);
+}
+
+.modal-title h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zzz-dark);
+  border: 1px solid var(--zzz-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  border-color: var(--zzz-red);
+  color: var(--zzz-red);
+  background: rgba(255, 51, 85, 0.1);
+}
+
+/* Modal Form */
+.modal-form {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  overflow-y: auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.form-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.zzz-input.textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.zzz-input.error {
+  border-color: var(--zzz-red);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--zzz-red);
+}
+
+.form-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.form-hint strong {
+  font-weight: 600;
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.difficulty-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: var(--space-md);
+  background: var(--zzz-dark);
+  border: 2px solid var(--zzz-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.difficulty-option:hover {
+  border-color: var(--diff-color);
+}
+
+.difficulty-option.selected {
+  background: rgba(0, 240, 255, 0.05);
+  border-color: var(--diff-color);
+  box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.1);
+}
+
+.difficulty-option .diff-rank {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--diff-color);
+}
+
+.difficulty-option .diff-xp {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.difficulty-option.selected .diff-xp {
+  color: var(--text-secondary);
+}
+
+/* Tag Input */
+.tag-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  background: var(--zzz-dark);
+  border: 2px solid var(--zzz-border);
+  transition: all var(--transition-fast);
+}
+
+.tag-input-wrapper:focus-within {
+  border-color: var(--zzz-cyan);
+}
+
+.tag-input-wrapper svg {
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.tag-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+}
+
+.tag-input:focus {
+  box-shadow: none;
+}
+
+.add-tag-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--zzz-panel);
+  border: 1px solid var(--zzz-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-tag-btn:hover:not(:disabled) {
+  border-color: var(--zzz-cyan);
+  color: var(--zzz-cyan);
+}
+
+.add-tag-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.tag-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--zzz-cyan);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--zzz-cyan);
+  text-transform: uppercase;
+}
+
+.tag-chip button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.tag-chip button:hover {
+  opacity: 1;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--zzz-border);
+}
+
+/* Modal Decoration */
+.modal-decoration {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.deco-corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+}
+
+.deco-corner.tl {
+  top: 8px;
+  left: 8px;
+  border-left: 2px solid var(--zzz-cyan);
+  border-top: 2px solid var(--zzz-cyan);
+  opacity: 0.3;
+}
+
+.deco-corner.tr {
+  top: 8px;
+  right: 24px;
+  border-right: 2px solid var(--zzz-cyan);
+  border-top: 2px solid var(--zzz-cyan);
+  opacity: 0.3;
+}
+
+.deco-corner.bl {
+  bottom: 24px;
+  left: 8px;
+  border-left: 2px solid var(--zzz-cyan);
+  border-bottom: 2px solid var(--zzz-cyan);
+  opacity: 0.3;
+}
+
+.deco-corner.br {
+  bottom: 8px;
+  right: 8px;
+  border-right: 2px solid var(--zzz-cyan);
+  border-bottom: 2px solid var(--zzz-cyan);
+  opacity: 0.3;
+}

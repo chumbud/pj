@@ -1,0 +1,367 @@
+/* Inter-Knot Dashboard - ZZZ Inspired Global Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  /* Core ZZZ Color Palette */
+  --zzz-black: #0a0a0c;
+  --zzz-dark: #12141a;
+  --zzz-panel: #1a1c24;
+  --zzz-panel-light: #242730;
+  --zzz-border: #2a2d38;
+  
+  /* Accent Colors - ZZZ Neon Vibes */
+  --zzz-cyan: #00f0ff;
+  --zzz-cyan-dim: #00a0aa;
+  --zzz-yellow: #ffcc00;
+  --zzz-yellow-dim: #aa8800;
+  --zzz-orange: #ff6b35;
+  --zzz-red: #ff3355;
+  --zzz-purple: #b44dff;
+  --zzz-green: #00ff88;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0a4b8;
+  --text-dim: #5a5e70;
+  
+  /* Shadows and Glows */
+  --glow-cyan: 0 0 20px rgba(0, 240, 255, 0.4);
+  --glow-yellow: 0 0 20px rgba(255, 204, 0, 0.4);
+  --glow-orange: 0 0 20px rgba(255, 107, 53, 0.4);
+  
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  
+  /* Border Radius - ZZZ uses sharp corners with occasional clips */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-medium: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--zzz-black);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--zzz-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--zzz-cyan-dim);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--zzz-cyan);
+}
+
+/* Text Selection */
+::selection {
+  background: var(--zzz-cyan);
+  color: var(--zzz-black);
+}
+
+/* Utility Classes */
+.text-cyan { color: var(--zzz-cyan); }
+.text-yellow { color: var(--zzz-yellow); }
+.text-orange { color: var(--zzz-orange); }
+.text-red { color: var(--zzz-red); }
+.text-green { color: var(--zzz-green); }
+.text-purple { color: var(--zzz-purple); }
+.text-dim { color: var(--text-dim); }
+
+/* Decorative Elements */
+.corner-accent {
+  position: relative;
+}
+
+.corner-accent::before,
+.corner-accent::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--zzz-cyan);
+}
+
+.corner-accent::before {
+  top: -2px;
+  left: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-accent::after {
+  bottom: -2px;
+  right: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Glitch Effect */
+@keyframes glitch {
+  0%, 100% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+}
+
+.glitch-hover:hover {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* Scan Line Effect */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 240, 255, 0.1),
+    transparent
+  );
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Button Base Styles */
+.zzz-button {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 20px;
+  border: 2px solid var(--zzz-cyan);
+  background: transparent;
+  color: var(--zzz-cyan);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.zzz-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--zzz-cyan), transparent);
+  transition: left 0.4s ease;
+  opacity: 0.3;
+}
+
+.zzz-button:hover {
+  background: var(--zzz-cyan);
+  color: var(--zzz-black);
+  box-shadow: var(--glow-cyan);
+}
+
+.zzz-button:hover::before {
+  left: 100%;
+}
+
+.zzz-button:active {
+  transform: scale(0.95);
+}
+
+.zzz-button.secondary {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+
+.zzz-button.secondary:hover {
+  background: var(--zzz-yellow);
+  color: var(--zzz-black);
+  box-shadow: var(--glow-yellow);
+}
+
+.zzz-button.danger {
+  border-color: var(--zzz-red);
+  color: var(--zzz-red);
+}
+
+.zzz-button.danger:hover {
+  background: var(--zzz-red);
+  color: var(--zzz-black);
+}
+
+/* Input Styles */
+.zzz-input {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 16px;
+  background: var(--zzz-dark);
+  border: 2px solid var(--zzz-border);
+  color: var(--text-primary);
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.zzz-input:focus {
+  outline: none;
+  border-color: var(--zzz-cyan);
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.zzz-input::placeholder {
+  color: var(--text-dim);
+}
+
+/* Panel Styles */
+.zzz-panel {
+  background: var(--zzz-panel);
+  border: 1px solid var(--zzz-border);
+  position: relative;
+}
+
+.zzz-panel-header {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, var(--zzz-panel-light), transparent);
+  border-bottom: 1px solid var(--zzz-border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zzz-panel-header::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: var(--zzz-cyan);
+}
+
+/* Noise Texture Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.03;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Badge Styles */
+.zzz-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  padding: 4px 8px;
+  background: var(--zzz-dark);
+  border: 1px solid var(--zzz-border);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.zzz-badge.cyan {
+  border-color: var(--zzz-cyan);
+  color: var(--zzz-cyan);
+}
+
+.zzz-badge.yellow {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+
+.zzz-badge.orange {
+  border-color: var(--zzz-orange);
+  color: var(--zzz-orange);
+}
+
+.zzz-badge.green {
+  border-color: var(--zzz-green);
+  color: var(--zzz-green);
+}
+
+.zzz-badge.red {
+  border-color: var(--zzz-red);
+  color: var(--zzz-red);
+}
+
+/* Progress Bar */
+.zzz-progress {
+  height: 8px;
+  background: var(--zzz-dark);
+  border: 1px solid var(--zzz-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.zzz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--zzz-cyan-dim), var(--zzz-cyan));
+  position: relative;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.zzz-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5));
+  animation: progressShine 1.5s infinite;
+}
+
+@keyframes progressShine {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
