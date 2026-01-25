@@ -142,6 +142,8 @@ class YippeeCounter {
         
         // Initialize tap sound
         this.initTapSound();
+
+        this.setupMobileOffset();
     }
     
     initTapSound() {
@@ -152,6 +154,54 @@ class YippeeCounter {
             this.tapSound.volume = 1.0; // Set volume to 100%
         } catch (e) {
             console.warn('Error loading tap sound:', e);
+        }
+    }
+
+    setupMobileOffset() {
+        const likeBubble = document.querySelector('.like-bubble');
+        const yippeeContainer = document.querySelector('.yippee-counter-container');
+        if (!likeBubble || !yippeeContainer) {
+            return;
+        }
+
+        const root = document.documentElement;
+        const mediaQuery = window.matchMedia('(max-width: 76.8rem)');
+        const gapPx = 12;
+
+        const updateOffset = () => {
+            if (!mediaQuery.matches) {
+                root.style.removeProperty('--yippee-mobile-offset');
+                return;
+            }
+
+            root.style.setProperty('--yippee-mobile-offset', '0px');
+
+            const bubbleRect = likeBubble.getBoundingClientRect();
+            const yippeeRect = yippeeContainer.getBoundingClientRect();
+            const overlaps =
+                bubbleRect.right > yippeeRect.left &&
+                bubbleRect.left < yippeeRect.right &&
+                bubbleRect.bottom > yippeeRect.top &&
+                bubbleRect.top < yippeeRect.bottom;
+
+            if (overlaps) {
+                root.style.setProperty('--yippee-mobile-offset', `${bubbleRect.height + gapPx}px`);
+            }
+        };
+
+        updateOffset();
+
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', updateOffset);
+        } else if (mediaQuery.addListener) {
+            mediaQuery.addListener(updateOffset);
+        }
+
+        window.addEventListener('resize', updateOffset);
+
+        if (window.ResizeObserver) {
+            const observer = new ResizeObserver(updateOffset);
+            observer.observe(likeBubble);
         }
     }
     
