@@ -142,9 +142,11 @@ class YippeeCounter {
         this.getUserLocation();
         
         // Set up button click handler - allow spam clicking (both desktop and mobile)
-        const handleClick = () => {
+        const handleClick = (event) => {
             this.playTapSound();
-            this.spawnYippeeGif();
+            // Pass the clicked button element to spawnYippeeGif
+            const clickedButton = event.currentTarget;
+            this.spawnYippeeGif(clickedButton);
             this.increment();
         };
         
@@ -269,12 +271,14 @@ class YippeeCounter {
         }
     }
     
-    spawnYippeeGif() {
-        if (!this.button || !this.yippeeImages || this.yippeeImages.length === 0) return;
+    spawnYippeeGif(clickedButton = null) {
+        // Determine which button to use - prefer the clicked button, fallback to available button
+        const activeButton = clickedButton || this.button || this.mobileButton;
+        if (!activeButton || !this.yippeeImages || this.yippeeImages.length === 0) return;
         if (!this.imagesReady) return; // Don't spawn if images aren't ready
         
-        // Get button position
-        const buttonRect = this.button.getBoundingClientRect();
+        // Get button position from the active button
+        const buttonRect = activeButton.getBoundingClientRect();
         const scrollY = window.scrollY || window.pageYOffset;
         
         // Randomly select an image
