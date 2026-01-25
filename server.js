@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -6,6 +8,13 @@ require('dotenv').config();
 const path = require('path');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
 const PORT = process.env.PORT || 3000;
 const ARENA_CHANNEL_SLUG = process.env.ARENA_CHANNEL_SLUG;
 
@@ -507,11 +516,20 @@ app.post('/api/yippee/increment', (req, res) => {
         // Handle empty file
         if (!data || data.trim() === '') {
             const counter = { count: 1 };
+            if (req.body && req.body.location) {
+                counter.lastLocation = req.body.location;
+            }
             fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
-            return res.json({ 
+            
+            const responseData = { 
                 count: counter.count,
-                location: null
-            });
+                location: counter.lastLocation || null
+            };
+            
+            // Broadcast update to all connected clients
+            io.emit('yippee-update', responseData);
+            
+            return res.json(responseData);
         }
         
         const counter = JSON.parse(data);
@@ -524,10 +542,15 @@ app.post('/api/yippee/increment', (req, res) => {
         
         fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
         
-        res.json({ 
+        const responseData = { 
             count: counter.count,
             location: counter.lastLocation || null
-        });
+        };
+        
+        // Broadcast update to all connected clients
+        io.emit('yippee-update', responseData);
+        
+        res.json(responseData);
     } catch (error) {
         console.error('Error incrementing counter:', error);
         console.error('Error details:', error.message, error.stack);
@@ -535,6 +558,15 @@ app.post('/api/yippee/increment', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+    console.log('Client connected:', socket.id);
+    
+    socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+    });
+});
+
+server.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });
