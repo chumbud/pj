@@ -1,10 +1,21 @@
 const express = require('express');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const http = require('http');
+const { Server } = require('socket.io');
 require('dotenv').config();
 const path = require('path');
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 const ARENA_CHANNEL_SLUG = process.env.ARENA_CHANNEL_SLUG;
 
@@ -331,6 +342,138 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
+// YIPPEE Counter endpoints
+const YIPPEE_COUNTER_FILE = path.join(__dirname, 'yippee-counter.json');
+
+// Initialize counter file if it doesn't exist or is empty/corrupted
+function initCounterFile() {
+    if (!fs.existsSync(YIPPEE_COUNTER_FILE)) {
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+        return;
+    }
+    
+    // Check if file is empty or corrupted
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        if (!data || data.trim() === '') {
+            // File exists but is empty, reinitialize it
+            fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+            return;
+        }
+        // Try to parse to check if it's valid JSON
+        JSON.parse(data);
+    } catch (error) {
+        // File is corrupted or invalid JSON, reinitialize it
+        console.warn('Counter file is corrupted, reinitializing:', error.message);
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+    }
+}
+
+// Get current counter value
+app.get('/api/yippee', (req, res) => {
+    initCounterFile();
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        // Handle empty file
+        if (!data || data.trim() === '') {
+            return res.json({ count: 0, location: null });
+        }
+        const counter = JSON.parse(data);
+        res.json({ 
+            count: counter.count || 0,
+            location: counter.lastLocation || null
+        });
+    } catch (error) {
+        console.error('Error reading counter:', error);
+        res.json({ count: 0, location: null });
+    }
+});
+
+// Increment counter
+app.post('/api/yippee/increment', (req, res) => {
+    initCounterFile();
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        // Handle empty file
+        if (!data || data.trim() === '') {
+            const counter = { count: 1 };
+            fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
+            
+            if (io) {
+                io.emit('yippee-update', { 
+                    count: counter.count,
+                    location: null
+                });
+            }
+            
+            return res.json({ 
+                count: counter.count,
+                location: null
+            });
+        }
+        
+        const counter = JSON.parse(data);
+        counter.count = (counter.count || 0) + 1;
+        
+        // Store location if provided (req.body should be parsed by express.json())
+        if (req.body && req.body.location) {
+            counter.lastLocation = req.body.location;
+        }
+        
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
+        
+        // Broadcast update to all connected clients with location
+        if (io) {
+            io.emit('yippee-update', { 
+                count: counter.count,
+                location: counter.lastLocation || null
+            });
+        }
+        
+        res.json({ 
+            count: counter.count,
+            location: counter.lastLocation || null
+        });
+    } catch (error) {
+        console.error('Error incrementing counter:', error);
+        console.error('Error details:', error.message, error.stack);
+        res.status(500).json({ error: 'Failed to increment counter', details: error.message });
+    }
+});
+
+// WebSocket connection handling - must be set up before server.listen()
+io.on('connection', (socket) => {
+    console.log('Socket.IO client connected:', socket.id);
+    
+    // Handle disconnection
+    socket.on('disconnect', (reason) => {
+        console.log('Socket.IO client disconnected:', socket.id, reason);
+    });
+    
+    // Handle connection errors
+    socket.on('error', (error) => {
+        console.error('Socket.IO error:', error);
+    });
+    
+    // Send current count to newly connected client
+    try {
+        initCounterFile();
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        if (!data || data.trim() === '') {
+            socket.emit('yippee-update', { count: 0, location: null });
+            return;
+        }
+        const counter = JSON.parse(data);
+        socket.emit('yippee-update', { 
+            count: counter.count || 0,
+            location: counter.lastLocation || null
+        });
+    } catch (error) {
+        console.error('Error sending initial count to client:', error);
+        socket.emit('yippee-update', { count: 0, location: null });
+    }
+});
+
+server.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

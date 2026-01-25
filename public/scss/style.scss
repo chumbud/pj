@@ -57,7 +57,7 @@ body {
     letter-spacing: -1px;
 
     @media (min-width: $breakpoint-tablet) {
-        letter-spacing: -2px;
+        letter-spacing: -1.5px;
     }
 }
 
@@ -412,7 +412,7 @@ a {
     text-decoration-color: $color-magenta;
     gap: 1rem;
     width: fit-content;
-    line-height: 1.3;
+    line-height: 1.1;
     padding: 0 .25rem 1rem .5rem;
     margin-left: -.5rem;
     text-decoration-thickness: 6px;
@@ -420,6 +420,7 @@ a {
     @media (min-width: $breakpoint-tablet) {
         font-size: 3.5rem;
         text-decoration-thickness: 8px;
+        line-height: 1.3;
     }
 
     &[href^="https://"]::after {
@@ -690,6 +691,202 @@ a {
 
         a {
             width: fit-content;
+        }
+    }
+
+    .yippee-counter-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: .25rem;
+        margin: 1rem 0;
+        position: relative;
+    }
+
+    .someone-yippeed-message {
+        font-family: "Funnel Sans";
+        font-size: 1.25rem;
+        color: $color-magenta;
+        opacity: 0;
+        position: absolute;
+        top: -1rem;
+        letter-spacing: 0;
+        pointer-events: none;
+        transition: opacity 0.1s ease, top 0.5s ease;
+        
+        &.show {
+            top: -1.5rem;
+            opacity: 1;
+        }
+    }
+
+    .yippee-ticker {
+        display: flex;
+        font-size: 2.5rem;
+        letter-spacing: 0.2rem;
+        color: black;
+        border-radius: 0.5rem;
+        justify-content: space-between;
+        overflow: hidden;
+        width: 100%;
+        position: relative;
+        min-width: 200px;
+    }
+
+
+    .ticker-digit {
+        display: inline-block;
+        text-align: center;
+        padding: 0.25rem .75rem;
+        font-family: 'Roboto Mono', monospace;
+        border: 1px solid rgba(black, .1);
+        color: black;
+        border-radius: 0.5rem;
+        line-height: 1;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        position: relative;
+        
+        &.highlight {
+            background-color: rgba($color-magenta, .1);
+            color: $color-magenta;
+        }
+        
+        .ticker-digit-content {
+            display: inline-block;
+            position: relative;
+        }
+    }
+
+    .last-yippee-location {
+        font-family: "Funnel Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+        font-size: 1rem;
+        color: rgba(black, 0.8);
+        text-align: center;
+        width: 100%;
+        border-radius: 0.5rem;
+        padding: .5rem .25rem;
+        min-height: 1.25rem;
+        border: 1px solid rgba(black, .1);
+
+        * {
+            letter-spacing: 0;
+            line-height: 1;
+        }
+        
+        .location-value {
+            font-weight: 800;
+        }
+        
+        .country-flag {
+            width: 20px;
+            height: 15px;
+            vertical-align: middle;
+            display: inline-block;
+            margin-left: 0.25rem;
+        }
+    }
+
+    // Ensure yippee GIF images are not affected by any CSS transitions or animations
+    [data-yippee-gif] {
+        img {
+            opacity: 1 !important;
+            transition: none !important;
+            animation: none !important;
+        }
+    }
+    
+    // CSS animation for yippee GIFs - optimized for GPU acceleration
+    @keyframes yippeeFloat {
+        0% {
+            transform: translate3d(-50%, -50%, 0) translate3d(0, 0, 0) scale3d(1, 1, 1);
+            opacity: 1;
+        }
+        75% {
+            transform: translate3d(-50%, -50%, 0) translate3d(0, -100px, 0) scale3d(1.2, 1.2, 1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate3d(-50%, -50%, 0) translate3d(0, -100px, 0) scale3d(1.2, 1.2, 1);
+            opacity: 0;
+        }
+    }
+    
+    // Optimize wrapper for GPU compositing
+    .yippee-gif-wrapper {
+        contain: layout style paint;
+        transform: translateZ(0);
+    }
+
+    .yippee-button {
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 3px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        background-color: transparent;
+        text-decoration: none;
+        position: relative;
+
+        &:before {
+            content: 'click to YIPPEE';
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 400;
+            color: black;
+            letter-spacing: 0;
+            line-height: 1;
+            padding: 0.5rem 0;
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background-color: rgb(255, 232, 255);
+            border: 3px solid rgb(255, 232, 255);
+            border-radius: 0.75rem;
+            border-bottom: none;
+            transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+        }
+
+        &:after {
+            content: '';
+            display: block;
+            top: -7px;
+            width: 100%;
+            position: relative;
+            height: 2rem;
+            background-color: rgb(255, 186, 255);
+            border: 3px solid rgb(255, 186, 255);
+            border-radius: 0 0 0.75rem 0.75rem;
+            z-index: -1;
+            transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+        }
+
+        &:hover {
+            &:before {
+                transform: translateY(2px);
+            }
+        }
+
+        &:active {
+            &:before {
+                transform: translateY(4px);
+                background-color: rgb(255, 232, 255);
+                border-color: rgb(255, 232, 255);
+                color: $color-magenta;
+            }
+
+            &:after {
+                background-color: rgb(255, 186, 255);
+                border-color: rgb(255, 186, 255);
+            }
         }
     }
 }

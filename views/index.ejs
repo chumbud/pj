@@ -28,6 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -46,6 +47,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="/likes">likes</a>
             <a href="/minerals">minerals</a>
         </ul>
+        <div class="yippee-counter-container">
+            <div class="someone-yippeed-message" id="someone-yippeed-message">someone yippee'd!</div>
+            <div class="yippee-ticker" id="yippee-ticker">
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+                <span class="ticker-digit"><span class="ticker-digit-content">0</span></span>
+            </div>
+            <div class="last-yippee-location">
+                <span class="location-label">last yippee from </span><span class="location-value" id="last-yippee-location-value">...</span>
+            </div>
+            <button class="yippee-button" id="yippee-button"></button>
+        </div>
         <ul class="bottom">
             <a href="https://www.are.na/pj-rosa/blocks" target="_blank">are.na</a>
             <a href="https://www.linkedin.com/in/pjrosa/" target="_blank">linkedin</a>
@@ -163,10 +180,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="contact-status" class="contact-status"></div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script type="module" src="/js/instant-navigation.js"></script>
 <script type="module" src="/js/utils.js"></script>
 <script type="module" src="/js/interests.js"></script> 
 <script type="module" src="/js/scrub.js"></script>
+<script type="module" src="/js/yippee-counter.js"></script>
 <script src="/js/contact.js"></script>
 </body>
 </html>
