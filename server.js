@@ -621,13 +621,16 @@ app.get('/api/osrs/stats', async (req, res) => {
         const skillsData = [];
         const activeSkills = [];
 
+        // XP needed for level 99 in OSRS
+        const XP_FOR_99 = 13034431;
+        
         skillsList.forEach(skillName => {
             const skill = currentStats.skills && currentStats.skills[skillName] ? currentStats.skills[skillName] : null;
             if (!skill) return;
 
             const level = skill.level || 0;
             const xp = skill.xp || 0;
-            const progress = level / 99;
+            const progress = Math.min(xp / XP_FOR_99, 1.0); // Cap at 1.0 (100%) for skills at/above 99
             
             // Check if skill gained XP (active)
             const prevSkill = previousStats.skills[skillName];
