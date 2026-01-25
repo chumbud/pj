@@ -3,6 +3,13 @@ class YippeeCounter {
     constructor() {
         this.ticker = document.getElementById('yippee-ticker');
         this.button = document.getElementById('yippee-button');
+        
+        // Check if required elements exist
+        if (!this.ticker || !this.button) {
+            console.error('YippeeCounter: Required elements not found. Ticker:', !!this.ticker, 'Button:', !!this.button);
+            return;
+        }
+        
         this.digitContainers = this.ticker.querySelectorAll('.ticker-digit');
         this.digits = Array.from(this.digitContainers).map(container => container.querySelector('.ticker-digit-content'));
         this.message = document.getElementById('someone-yippeed-message');
