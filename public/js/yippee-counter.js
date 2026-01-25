@@ -142,6 +142,8 @@ class YippeeCounter {
         
         // Initialize tap sound
         this.initTapSound();
+
+        this.setupMobileOffset();
     }
     
     initTapSound() {
@@ -152,6 +154,85 @@ class YippeeCounter {
             this.tapSound.volume = 1.0; // Set volume to 100%
         } catch (e) {
             console.warn('Error loading tap sound:', e);
+        }
+    }
+
+    setupMobileOffset() {
+        const likeBubble = document.querySelector('.like-bubble');
+        const yippeeContainer = document.querySelector('.yippee-counter-container');
+        if (!likeBubble || !yippeeContainer) {
+            return;
+        }
+
+        const root = document.documentElement;
+        const mediaQuery = window.matchMedia('(max-width: 76.8rem)');
+        const gapPx = 12;
+        let resizeObserver = null;
+        let resizeHandler = null;
+
+        const updateOffset = () => {
+            if (!mediaQuery.matches) {
+                root.style.removeProperty('--yippee-mobile-offset');
+                return;
+            }
+
+            root.style.setProperty('--yippee-mobile-offset', '0px');
+
+            const bubbleRect = likeBubble.getBoundingClientRect();
+            const yippeeRect = yippeeContainer.getBoundingClientRect();
+            const overlaps =
+                bubbleRect.right > yippeeRect.left &&
+                bubbleRect.left < yippeeRect.right &&
+                bubbleRect.bottom > yippeeRect.top &&
+                bubbleRect.top < yippeeRect.bottom;
+
+            if (overlaps) {
+                root.style.setProperty('--yippee-mobile-offset', `${bubbleRect.height + gapPx}px`);
+            }
+        };
+
+        const enableMobileOffset = () => {
+            updateOffset();
+
+            if (!resizeHandler) {
+                resizeHandler = () => updateOffset();
+                window.addEventListener('resize', resizeHandler);
+            }
+
+            if (!resizeObserver && window.ResizeObserver) {
+                resizeObserver = new ResizeObserver(updateOffset);
+                resizeObserver.observe(likeBubble);
+            }
+        };
+
+        const disableMobileOffset = () => {
+            root.style.removeProperty('--yippee-mobile-offset');
+
+            if (resizeHandler) {
+                window.removeEventListener('resize', resizeHandler);
+                resizeHandler = null;
+            }
+
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+                resizeObserver = null;
+            }
+        };
+
+        const handleBreakpointChange = () => {
+            if (mediaQuery.matches) {
+                enableMobileOffset();
+            } else {
+                disableMobileOffset();
+            }
+        };
+
+        handleBreakpointChange();
+
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', handleBreakpointChange);
+        } else if (mediaQuery.addListener) {
+            mediaQuery.addListener(handleBreakpointChange);
         }
     }
     
