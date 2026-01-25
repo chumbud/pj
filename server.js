@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 require('dotenv').config();
 const path = require('path');
 
@@ -413,6 +414,89 @@ app.post('/api/contact', async (req, res) => {
             ? 'Email authentication failed. Please check your Gmail credentials.'
             : 'Failed to send email';
         res.status(500).json({ error: errorMessage });
+    }
+});
+
+// YIPPEE Counter endpoints
+const YIPPEE_COUNTER_FILE = path.join(__dirname, 'yippee-counter.json');
+
+// Initialize counter file if it doesn't exist or is empty/corrupted
+function initCounterFile() {
+    if (!fs.existsSync(YIPPEE_COUNTER_FILE)) {
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+        return;
+    }
+    
+    // Check if file is empty or corrupted
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        if (!data || data.trim() === '') {
+            // File exists but is empty, reinitialize it
+            fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+            return;
+        }
+        // Try to parse to check if it's valid JSON
+        JSON.parse(data);
+    } catch (error) {
+        // File is corrupted or invalid JSON, reinitialize it
+        console.warn('Counter file is corrupted, reinitializing:', error.message);
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify({ count: 0 }), 'utf8');
+    }
+}
+
+// Get current counter value
+app.get('/api/yippee', (req, res) => {
+    initCounterFile();
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        // Handle empty file
+        if (!data || data.trim() === '') {
+            return res.json({ count: 0, location: null });
+        }
+        const counter = JSON.parse(data);
+        res.json({ 
+            count: counter.count || 0,
+            location: counter.lastLocation || null
+        });
+    } catch (error) {
+        console.error('Error reading counter:', error);
+        res.json({ count: 0, location: null });
+    }
+});
+
+// Increment counter
+app.post('/api/yippee/increment', (req, res) => {
+    initCounterFile();
+    try {
+        const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
+        // Handle empty file
+        if (!data || data.trim() === '') {
+            const counter = { count: 1 };
+            fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
+            return res.json({ 
+                count: counter.count,
+                location: null
+            });
+        }
+        
+        const counter = JSON.parse(data);
+        counter.count = (counter.count || 0) + 1;
+        
+        // Store location if provided (req.body should be parsed by express.json())
+        if (req.body && req.body.location) {
+            counter.lastLocation = req.body.location;
+        }
+        
+        fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
+        
+        res.json({ 
+            count: counter.count,
+            location: counter.lastLocation || null
+        });
+    } catch (error) {
+        console.error('Error incrementing counter:', error);
+        console.error('Error details:', error.message, error.stack);
+        res.status(500).json({ error: 'Failed to increment counter', details: error.message });
     }
 });
 
