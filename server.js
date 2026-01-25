@@ -16,9 +16,9 @@ const RATE_LIMIT_MAX = 3; // Max 3 submissions per 15 minutes per IP
 function getClientIP(req) {
     const xForwardedFor = req.headers['x-forwarded-for'];
     return (xForwardedFor && xForwardedFor.split(',')[0]) || 
-           req.headers['x-real-ip'] || 
-           req.connection.remoteAddress || 
-           req.socket.remoteAddress ||
+           (req.headers['x-real-ip']) || 
+           (req.connection && req.connection.remoteAddress) || 
+           (req.socket && req.socket.remoteAddress) ||
            'unknown';
 }
 
