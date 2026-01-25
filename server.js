@@ -467,7 +467,12 @@ app.get('/api/yippee', (req, res) => {
 // Get user location (proxy to avoid CORS)
 app.get('/api/location', async (req, res) => {
     try {
-        const response = await axios.get('https://ipapi.co/json/');
+        const response = await axios.get('https://ipapi.co/json/', {
+            timeout: 5000, // 5 second timeout
+            headers: {
+                'User-Agent': 'Mozilla/5.0'
+            }
+        });
         const data = response.data;
         
         if (data.city && data.region && data.country_code) {
@@ -477,11 +482,20 @@ app.get('/api/location', async (req, res) => {
                 countryCode: data.country_code
             });
         } else {
+            // Return success but with null data instead of error
             res.json({ error: 'Location data not available' });
         }
     } catch (error) {
+        // Handle rate limiting (429) gracefully - return 200 with error message
+        if (error.response && error.response.status === 429) {
+            console.warn('Location API rate limited, returning empty response');
+            return res.json({ error: 'Location service temporarily unavailable' });
+        }
+        
+        // Handle other errors
         console.error('Error fetching location:', error.message);
-        res.status(500).json({ error: 'Failed to fetch location' });
+        // Return 200 with error instead of 500 to prevent frontend errors
+        res.json({ error: 'Failed to fetch location' });
     }
 });
 

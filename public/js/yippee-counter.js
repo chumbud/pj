@@ -720,10 +720,19 @@ class YippeeCounter {
             // Use backend proxy to avoid CORS issues
             const response = await fetch('/api/location');
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // If server returns error status, log but don't throw
+                console.warn('Location API returned error status:', response.status);
+                return;
             }
             const data = await response.json();
             
+            // Check if response contains an error message
+            if (data.error) {
+                console.warn('Location API error:', data.error);
+                return;
+            }
+            
+            // Only set location if we have valid data
             if (data.city && data.region && data.countryCode) {
                 this.currentLocation = {
                     city: data.city,
@@ -732,9 +741,8 @@ class YippeeCounter {
                 };
             }
         } catch (error) {
-            console.error('Error getting location:', error);
-            // Fallback: try to get location from browser geolocation API
-            // (but this requires user permission, so we'll just skip it)
+            console.warn('Error getting location:', error.message);
+            // Silently fail - location is optional
         }
     }
     
