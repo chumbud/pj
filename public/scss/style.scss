@@ -840,7 +840,7 @@ a {
             color: black;
             letter-spacing: 0;
             line-height: 1;
-            padding: 0.5rem 0;
+            padding: 1.5rem 0;
             display: flex;
             position: relative;
             align-items: center;
@@ -853,6 +853,9 @@ a {
             border-radius: 0.75rem;
             border-bottom: none;
             transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+            @media (min-width: $breakpoint-tablet) {
+                padding: 0.5rem 0;
+            }
         }
 
         &:after {
@@ -866,7 +869,11 @@ a {
             border: 3px solid rgb(255, 186, 255);
             border-radius: 0 0 0.75rem 0.75rem;
             z-index: -1;
+            top: -1.5rem;
             transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+            @media (min-width: $breakpoint-tablet) {
+                top: -10px;
+            }
         }
 
         &:hover {
@@ -912,21 +919,23 @@ a {
         right: 1rem;
         bottom: calc(1rem + var(--yippee-mobile-offset, 0px));
         z-index: 1001;
-        width: min(26rem, 75vw);
-        padding: 0.75rem;
-        border: 1px solid rgba(0, 0, 0, 0.15);
+        width: unset;
+        padding: 2rem;
         border-radius: 1rem;
         background-color: white;
+        border: 1px solid rgba(0, 0, 0, 0.15);
     }
 
     .nav .yippee-ticker {
         min-width: 0;
         font-size: 2rem;
         letter-spacing: 0.15rem;
+        gap: 0.5rem;
     }
 
     .nav .ticker-digit {
         padding: 0.2rem 0.5rem;
+        font-size: 2.5rem;
     }
 
     .nav .last-yippee-location {
@@ -935,6 +944,10 @@ a {
 
     .nav .yippee-button:before {
         font-size: 1.1rem;
+    }
+
+    .nav .yippee-button {
+        height: calc(100% - 2rem);
     }
 }
 
