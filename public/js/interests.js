@@ -86,10 +86,13 @@ function getRandomInterest() {
 
 function displayRandomInterest() {
     const interestElement = document.getElementById('interest-display');
+    const mobileInterestElement = document.getElementById('mobile-interest-display');
     const newInterest = getRandomInterest();
     
-    if (interestElement) {
-        interestElement.innerHTML = ''; 
+    const updateInterest = (element) => {
+        if (!element) return;
+        
+        element.innerHTML = ''; 
         let textContainer;
         const textToAnimate = newInterest.text || ''; 
 
@@ -112,17 +115,26 @@ function displayRandomInterest() {
             img.alt = newInterest.text || "Interest icon";
             img.classList.add('interest-icon');
             
-            interestElement.appendChild(img);
-            interestElement.appendChild(document.createTextNode(' '));
+            element.appendChild(img);
+            element.appendChild(document.createTextNode(' '));
         }
         
-        interestElement.appendChild(textContainer);
+        element.appendChild(textContainer);
 
         if (textToAnimate.length > 0) {
             typeText(textContainer, textToAnimate);
         }
+    };
+    
+    // Update desktop interest
+    updateInterest(interestElement);
+    
+    // Update mobile interest
+    updateInterest(mobileInterestElement);
 
-        const getAnotherLink = document.querySelector('.get-another-link');
+    // Update get another links (both desktop and mobile)
+    const getAnotherLinks = document.querySelectorAll('.get-another-link');
+    getAnotherLinks.forEach(getAnotherLink => {
         if (getAnotherLink) {
             if (newInterest === EASTER_EGG_INTEREST) {
                 getAnotherLink.style.display = 'none';
@@ -130,17 +142,20 @@ function displayRandomInterest() {
                 getAnotherLink.style.display = 'block';
             }
         }
-    }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     displayRandomInterest();
     
-    const getAnotherLink = document.querySelector('.get-another-link');
-    if (getAnotherLink) {
-        getAnotherLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            displayRandomInterest();
-        });
-    }
+    // Set up click handlers for all get-another links (desktop and mobile)
+    const getAnotherLinks = document.querySelectorAll('.get-another-link');
+    getAnotherLinks.forEach(getAnotherLink => {
+        if (getAnotherLink) {
+            getAnotherLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                displayRandomInterest();
+            });
+        }
+    });
 });

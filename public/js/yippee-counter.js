@@ -4,13 +4,23 @@ class YippeeCounter {
         this.ticker = document.getElementById('yippee-ticker');
         this.button = document.getElementById('yippee-button');
         
-        // Check if required elements exist
-        if (!this.ticker || !this.button) {
-            console.error('YippeeCounter: Required elements not found. Ticker:', !!this.ticker, 'Button:', !!this.button);
+        // Mobile versions
+        this.mobileTicker = document.getElementById('mobile-yippee-ticker');
+        this.mobileButton = document.getElementById('mobile-yippee-button');
+        this.mobileMessage = document.getElementById('mobile-someone-yippeed-message');
+        this.mobileLocationValue = document.getElementById('mobile-last-yippee-location-value');
+        
+        // Check if required elements exist (at least one set)
+        if (!this.ticker && !this.mobileTicker || (!this.button && !this.mobileButton)) {
+            console.error('YippeeCounter: Required elements not found.');
             return;
         }
         
-        this.digitContainers = this.ticker.querySelectorAll('.ticker-digit');
+        // Use desktop or mobile elements (prefer desktop, fallback to mobile)
+        const activeTicker = this.ticker || this.mobileTicker;
+        const activeButton = this.button || this.mobileButton;
+        
+        this.digitContainers = activeTicker.querySelectorAll('.ticker-digit');
         this.digits = Array.from(this.digitContainers).map(container => container.querySelector('.ticker-digit-content'));
         this.message = document.getElementById('someone-yippeed-message');
         this.locationValue = document.getElementById('last-yippee-location-value');
@@ -131,13 +141,18 @@ class YippeeCounter {
         // Get user's location
         this.getUserLocation();
         
-        // Set up button click handler - allow spam clicking
+        // Set up button click handler - allow spam clicking (both desktop and mobile)
+        const handleClick = () => {
+            this.playTapSound();
+            this.spawnYippeeGif();
+            this.increment();
+        };
+        
         if (this.button) {
-            this.button.addEventListener('click', () => {
-                this.playTapSound();
-                this.spawnYippeeGif();
-                this.increment();
-            });
+            this.button.addEventListener('click', handleClick);
+        }
+        if (this.mobileButton) {
+            this.mobileButton.addEventListener('click', handleClick);
         }
         
         // Initialize tap sound
@@ -664,30 +679,66 @@ class YippeeCounter {
     updateDisplay(count, animate = true) {
         const countStr = this.formatCount(count);
         
+        // Update desktop digits
         this.digits.forEach((digit, index) => {
             if (digit) {
                 digit.textContent = countStr[index];
             }
         });
+        
+        // Update mobile digits if they exist
+        if (this.mobileTicker) {
+            const mobileDigitContainers = this.mobileTicker.querySelectorAll('.ticker-digit');
+            const mobileDigits = Array.from(mobileDigitContainers).map(container => container.querySelector('.ticker-digit-content'));
+            mobileDigits.forEach((digit, index) => {
+                if (digit) {
+                    digit.textContent = countStr[index];
+                }
+            });
+        }
     }
     
     showSomeoneYippeedMessage() {
-        if (!this.message) return;
+        // Show desktop message
+        if (this.message) {
+            this.message.classList.add('show');
+        }
         
-        // Show the message
-        this.message.classList.add('show');
+        // Show mobile message
+        if (this.mobileMessage) {
+            this.mobileMessage.classList.add('show');
+        }
         
-        // Highlight all digit containers
+        // Highlight all digit containers (desktop)
         this.digitContainers.forEach(container => {
             container.classList.add('highlight');
         });
         
+        // Highlight mobile digit containers if they exist
+        if (this.mobileTicker) {
+            const mobileDigitContainers = this.mobileTicker.querySelectorAll('.ticker-digit');
+            mobileDigitContainers.forEach(container => {
+                container.classList.add('highlight');
+            });
+        }
+        
         // Fade out after 1.5s
         setTimeout(() => {
-            this.message.classList.remove('show');
+            if (this.message) {
+                this.message.classList.remove('show');
+            }
+            if (this.mobileMessage) {
+                this.mobileMessage.classList.remove('show');
+            }
             this.digitContainers.forEach(container => {
                 container.classList.remove('highlight');
             });
+            if (this.mobileTicker) {
+                const mobileDigitContainers = this.mobileTicker.querySelectorAll('.ticker-digit');
+                mobileDigitContainers.forEach(container => {
+                    container.classList.remove('highlight');
+                });
+            }
         }, 1500);
     }
     
@@ -748,31 +799,39 @@ class YippeeCounter {
     }
     
     updateLocationDisplay(location) {
-        if (!this.locationValue) return;
-        
-        if (!location) {
-            // Show placeholder if no location
-            this.locationValue.textContent = '...';
-            return;
-        }
-        
-        const { city, region, countryCode } = location;
-        if (city && region) {
-            let locationText = `${city}, ${region}`;
+        const updateLocation = (locationElement) => {
+            if (!locationElement) return;
             
-            if (countryCode) {
-                const flag = this.getCountryFlag(countryCode);
-                if (flag) {
-                    this.locationValue.textContent = `${locationText} ${flag}`;
+            if (!location) {
+                // Show placeholder if no location
+                locationElement.textContent = '...';
+                return;
+            }
+            
+            const { city, region, countryCode } = location;
+            if (city && region) {
+                let locationText = `${city}, ${region}`;
+                
+                if (countryCode) {
+                    const flag = this.getCountryFlag(countryCode);
+                    if (flag) {
+                        locationElement.textContent = `${locationText} ${flag}`;
+                    } else {
+                        locationElement.textContent = locationText;
+                    }
                 } else {
-                    this.locationValue.textContent = locationText;
+                    locationElement.textContent = locationText;
                 }
             } else {
-                this.locationValue.textContent = locationText;
+                locationElement.textContent = '...';
             }
-        } else {
-            this.locationValue.textContent = '...';
-        }
+        };
+        
+        // Update desktop location
+        updateLocation(this.locationValue);
+        
+        // Update mobile location
+        updateLocation(this.mobileLocationValue);
     }
     
     animateTicker(oldCount, newCount) {
@@ -780,52 +839,66 @@ class YippeeCounter {
         const oldStr = this.formatCount(oldCount);
         const newStr = this.formatCount(newCount);
         
-        // Cancel ALL existing animations immediately for instant response
-        // AND reset transforms to prevent stuck digits
-        this.digits.forEach(digit => {
-            if (digit) {
-                anime.remove(digit);
-                // Reset transform properties to prevent stuck digits
-                digit.style.transform = '';
-                digit.style.opacity = '';
-                digit.style.translateY = '';
-                digit.style.scale = '';
-            }
-        });
-        anime.remove(this.ticker);
+        const animateDigits = (digits, ticker) => {
+            if (!digits || !ticker) return;
+            
+            // Cancel ALL existing animations immediately for instant response
+            // AND reset transforms to prevent stuck digits
+            digits.forEach(digit => {
+                if (digit) {
+                    anime.remove(digit);
+                    // Reset transform properties to prevent stuck digits
+                    digit.style.transform = '';
+                    digit.style.opacity = '';
+                    digit.style.translateY = '';
+                    digit.style.scale = '';
+                }
+            });
+            anime.remove(ticker);
+            
+            // Update digits that changed
+            digits.forEach((digit, index) => {
+                if (!digit) return;
+                
+                const oldValue = oldStr[index];
+                const newValue = newStr[index];
+                
+                if (oldValue !== newValue) {
+                    // Set value immediately
+                    digit.textContent = newValue;
+                    
+                    // Reset position before animating to prevent stuck state
+                    digit.style.transform = 'translateY(-15px) scale(0.8)';
+                    digit.style.opacity = '0.5';
+                    
+                    // Animate with super strong spring easing (225ms duration - 50% slower)
+                    // No delay for instant feedback during spam clicking
+                    anime({
+                        targets: digit,
+                        translateY: [-15, 0],
+                        scale: [0.8, 1],
+                        opacity: [0.5, 1],
+                        easing: this.getSpringEasing(),
+                        duration: 225,
+                        complete: () => {
+                            // Ensure final state is set after animation completes
+                            digit.style.transform = '';
+                            digit.style.opacity = '';
+                        }
+                    });
+                }
+            });
+        };
         
-        // Update digits that changed
-        this.digits.forEach((digit, index) => {
-            if (!digit) return;
-            
-            const oldValue = oldStr[index];
-            const newValue = newStr[index];
-            
-            if (oldValue !== newValue) {
-                // Set value immediately
-                digit.textContent = newValue;
-                
-                // Reset position before animating to prevent stuck state
-                digit.style.transform = 'translateY(-15px) scale(0.8)';
-                digit.style.opacity = '0.5';
-                
-                // Animate with super strong spring easing (225ms duration - 50% slower)
-                // No delay for instant feedback during spam clicking
-                anime({
-                    targets: digit,
-                    translateY: [-15, 0],
-                    scale: [0.8, 1],
-                    opacity: [0.5, 1],
-                    easing: this.getSpringEasing(),
-                    duration: 225,
-                    complete: () => {
-                        // Ensure final state is set after animation completes
-                        digit.style.transform = '';
-                        digit.style.opacity = '';
-                    }
-                });
-            }
-        });
+        // Animate desktop digits
+        animateDigits(this.digits, this.ticker);
+        
+        // Animate mobile digits if they exist
+        if (this.mobileTicker) {
+            const mobileDigitContainers = this.mobileTicker.querySelectorAll('.ticker-digit');
+            const mobileDigits = Array.from(mobileDigitContainers).map(container => container.querySelector('.ticker-digit-content'));
+            animateDigits(mobileDigits, this.mobileTicker);
+        }
     }
     
 }

@@ -472,6 +472,12 @@ a[href^="https://"]:hover:after {
   bottom: 1rem;
   transition: all 0.3s ease-in-out;
 }
+@media (max-width: 76.8rem) {
+  .like-bubble {
+    position: fixed;
+    display: none;
+  }
+}
 .like-bubble .get-another-link {
   line-height: 1;
   color: #ff00ff;
@@ -676,7 +682,6 @@ a[href^="https://"]:hover:after {
   color: black;
   border-radius: 0.5rem;
   justify-content: space-between;
-  overflow: hidden;
   width: 100%;
   gap: 0.25rem;
   position: relative;
@@ -691,6 +696,7 @@ a[href^="https://"]:hover:after {
   color: black;
   border-radius: 0.5rem;
   width: 100%;
+  overflow: hidden;
   line-height: 1;
   transition: background-color 0.3s ease, color 0.3s ease;
   position: relative;
@@ -711,7 +717,6 @@ a[href^="https://"]:hover:after {
   width: 100%;
   border-radius: 0.5rem;
   padding: 0.5rem 0.25rem;
-  min-height: 1.25rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 .nav .last-yippee-location * {
@@ -838,15 +843,197 @@ a[href^="https://"]:hover:after {
     display: none;
   }
   .nav .yippee-counter-container {
-    position: fixed;
-    right: 1rem;
-    bottom: calc(1rem + var(--yippee-mobile-offset, 0px));
-    z-index: 1001;
-    width: unset;
-    padding: 2rem;
-    border-radius: 1rem;
+    display: none;
+  }
+  .mobile-yippee {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 2rem 1.5rem 2rem;
     background-color: white;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid #606060;
+    margin-top: 2rem;
+    width: fit-content;
+    gap: 0.5rem;
+    position: relative;
+  }
+  .mobile-yippee .someone-yippeed-message {
+    font-family: "Onest";
+    font-size: 1.25rem;
+    color: #ff00ff;
+    opacity: 0;
+    position: absolute;
+    top: -1rem;
+    pointer-events: none;
+    transition: opacity 0.1s ease, top 0.5s ease;
+  }
+  .mobile-yippee .someone-yippeed-message.show {
+    top: -1.5rem;
+    opacity: 1;
+  }
+  .mobile-yippee .yippee-ticker {
+    display: flex;
+    font-size: 2rem;
+    color: black;
+    border-radius: 0.5rem;
+    justify-content: space-between;
+    overflow: hidden;
+    width: 100%;
+    gap: 0.5rem;
+    position: relative;
+  }
+  .mobile-yippee .ticker-digit {
+    display: inline-block;
+    text-align: center;
+    padding: 0.5rem 0.5rem;
+    font-family: "Roboto Mono", monospace;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: black;
+    border-radius: 0.5rem;
+    width: 100%;
+    line-height: 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+    font-size: 2.5rem;
+  }
+  .mobile-yippee .ticker-digit.highlight {
+    background-color: rgba(255, 0, 255, 0.1);
+    color: #ff00ff;
+  }
+  .mobile-yippee .ticker-digit .ticker-digit-content {
+    display: inline-block;
+    position: relative;
+  }
+  .mobile-yippee .last-yippee-location {
+    font-family: "Funnel Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    font-size: 0.9rem;
+    color: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    width: 100%;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 1.5rem;
+  }
+  .mobile-yippee .last-yippee-location * {
+    line-height: 1;
+  }
+  .mobile-yippee .last-yippee-location .location-value {
+    font-weight: 800;
+  }
+  .mobile-yippee .yippee-button {
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 3px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: transparent;
+    text-decoration: none;
+    position: relative;
+    height: auto;
+  }
+  .mobile-yippee .yippee-button:before {
+    content: "click to YIPPEE";
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: black;
+    line-height: 1;
+    padding: 1.5rem 0;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgb(255, 232, 255);
+    border: 3px solid rgb(255, 232, 255);
+    border-radius: 0.75rem;
+    border-bottom: none;
+    transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+  }
+  .mobile-yippee .yippee-button:after {
+    content: "";
+    display: block;
+    top: -7px;
+    width: 100%;
+    position: relative;
+    height: 2rem;
+    background-color: rgb(255, 186, 255);
+    border: 3px solid rgb(255, 186, 255);
+    border-radius: 0 0 0.75rem 0.75rem;
+    z-index: 0;
+    top: -0.5rem;
+    transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
+  }
+  .mobile-yippee .yippee-button:hover:before {
+    transform: translateY(2px);
+  }
+  .mobile-yippee .yippee-button:active:before {
+    transform: translateY(4px);
+    background-color: rgb(255, 232, 255);
+    border-color: rgb(255, 232, 255);
+    color: #ff00ff;
+  }
+  .mobile-yippee .yippee-button:active:after {
+    background-color: rgb(255, 186, 255);
+    border-color: rgb(255, 186, 255);
+  }
+}
+@media (min-width: 76.8rem) {
+  .mobile-yippee {
+    display: none !important;
+  }
+}
+@media (max-width: 76.8rem) {
+  .mobile-like-bubble {
+    display: flex;
+    position: static;
+    left: unset;
+    bottom: unset;
+    box-shadow: none;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 100%;
+    background-color: white;
+    color: rgba(96, 96, 96, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    padding: 1rem;
+    font-size: 2.5rem;
+    gap: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (min-width: 76.8rem) {
+  .mobile-like-bubble {
+    display: none;
+  }
+  .mobile-yippee .yippee-ticker {
+    min-width: 0;
+    font-size: 2rem;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .mobile-yippee .ticker-digit {
+    padding: 0.2rem 0.5rem;
+    font-size: 2.5rem;
+  }
+  .mobile-yippee .last-yippee-location {
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  .mobile-yippee .yippee-button:before {
+    font-size: 1.1rem;
+  }
+  .mobile-yippee .yippee-button {
+    width: 100%;
+    margin-top: 3px;
   }
   .nav .yippee-ticker {
     min-width: 0;
