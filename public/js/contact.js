@@ -58,6 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const email = document.getElementById('contact-email').value;
         const message = document.getElementById('contact-message').value;
+        const honeypot = document.getElementById('website-url').value;
+
+        // Check honeypot - if filled, it's likely a bot
+        if (honeypot) {
+            // Silently fail - don't alert bots
+            return;
+        }
 
         // Disable button and show loading
         submitBtn.disabled = true;
