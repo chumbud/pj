@@ -664,6 +664,15 @@ app.get('/api/osrs/stats', async (req, res) => {
             .filter(s => s.level < 99)
             .sort((a, b) => b.progress - a.progress)[0] || null;
 
+        // Find all max-leveled skills (level 99)
+        const maxLeveledSkills = skillsData
+            .filter(s => s.level === 99)
+            .map(s => ({
+                name: s.name,
+                level: s.level,
+                xp: s.xp
+            }));
+
         // Detect gamemode by checking which endpoint the player exists in
         // getStatsByGamemode auto-detects, but we need to check manually
         let gamemode = 'normal';
@@ -734,6 +743,7 @@ app.get('/api/osrs/stats', async (req, res) => {
                 progress: closestTo99.progress,
                 remaining: Math.ceil((99 - closestTo99.level) / 99 * 100)
             } : null,
+            maxLeveledSkills: maxLeveledSkills,
             lastUpdated: Date.now()
         };
 

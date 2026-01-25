@@ -34,8 +34,10 @@ $breakpoint-big: 144rem;
 
 .osrs-widget-header {
     display: flex;
+    flex-direction: column;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.5rem;
     font-size: 1.6rem;
 
     @media (min-width: $breakpoint-tablet) {
@@ -50,6 +52,38 @@ $breakpoint-big: 144rem;
         justify-content: flex-start;
         width: 100%;
         gap: 1rem;
+    }
+}
+
+.osrs-widget-gamemode {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    color: $color-text;
+    font-weight: 600;
+
+    @media (min-width: $breakpoint-tablet) {
+        font-size: 1rem;
+    }
+
+    .gamemode-icon {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+        flex-shrink: 0;
+        image-rendering: pixelated;
+    }
+
+    .gamemode-label {
+        text-transform: lowercase;
+        color: $color-text;
+        font-size: 1rem;
+        font-weight: 600;
+
+        @media (min-width: $breakpoint-tablet) {
+            font-size: .825rem;
+        }
     }
 }
 
@@ -145,6 +179,33 @@ $breakpoint-big: 144rem;
 
     @media (min-width: $breakpoint-tablet) {
         font-size: 1rem;
+    }
+}
+
+.max-leveled-skills {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+
+    .skill-icon {
+        width: 1rem;
+        height: 1rem;
+        object-fit: contain;
+        flex-shrink: 0;
+        image-rendering: pixelated;
+    }
+
+    .max-leveled-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $color-text;
+        margin-left: 0.25rem;
+
+        @media (min-width: $breakpoint-tablet) {
+            font-size: 0.875rem;
+        }
     }
 }
 

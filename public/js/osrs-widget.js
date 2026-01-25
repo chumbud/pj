@@ -46,6 +46,21 @@ function renderOSRSWidget(data) {
     const percentage = Math.round(skill.progress * 100);
     const iconUrl = getSkillIconUrl(skill.name);
     
+    // Build max-leveled skills HTML
+    let maxLeveledHtml = '';
+    if (data.maxLeveledSkills && data.maxLeveledSkills.length > 0) {
+        const maxLeveledIcons = data.maxLeveledSkills.map(s => {
+            const skillIconUrl = getSkillIconUrl(s.name);
+            return `<img src="${skillIconUrl}" alt="${s.name}" class="skill-icon" onerror="this.style.display='none'">`;
+        }).join('');
+        maxLeveledHtml = `
+            <div class="max-leveled-skills">
+                ${maxLeveledIcons}
+                <span class="max-leveled-label">99/99</span>
+            </div>
+        `;
+    }
+    
     widgetContainer.innerHTML = `
         <div class="skill-content">
             <div class="skill-header">
@@ -59,6 +74,7 @@ function renderOSRSWidget(data) {
                 <div class="progress-bar" style="width: ${percentage}%"></div>
             </div>
             <div class="skill-percentage">${percentage}% til 99</div>
+            ${maxLeveledHtml}
         </div>
     `;
 }
