@@ -279,7 +279,6 @@ class YippeeCounter {
         
         // Get button position from the active button
         const buttonRect = activeButton.getBoundingClientRect();
-        const scrollY = window.scrollY || window.pageYOffset;
         
         // Randomly select an image
         const randomIndex = Math.floor(Math.random() * this.yippeeImages.length);
@@ -297,10 +296,11 @@ class YippeeCounter {
         wrapper.setAttribute('data-yippee-gif', 'true');
         wrapper.className = 'yippee-gif-wrapper';
         // Use transform3d to force GPU layer, will-change for optimization hint
+        // position: fixed uses viewport coordinates, so use buttonRect.top directly (no scrollY needed)
         wrapper.style.cssText = `
             position: fixed;
             left: ${randomX}px;
-            top: ${buttonRect.top + scrollY}px;
+            top: ${buttonRect.top}px;
             width: 50px;
             height: 50px;
             pointer-events: none;
@@ -379,10 +379,11 @@ class YippeeCounter {
         
         const wrapper = document.createElement('div');
         wrapper.setAttribute('data-yippee-gif', 'true');
+        // position: fixed uses viewport coordinates, so use buttonRect.top directly (no scrollY needed)
         wrapper.style.cssText = `
             position: fixed;
             left: ${randomX}px;
-            top: ${buttonRect.top + scrollY}px;
+            top: ${buttonRect.top}px;
             width: 50px;
             height: 50px;
             pointer-events: none;
