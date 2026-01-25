@@ -591,7 +591,7 @@ app.get('/api/osrs/stats', async (req, res) => {
         
         // The package returns stats directly as an object with skill names as keys
         // If it's already in the right format, use it; otherwise wrap it
-        const currentStats = statsResponse?.skills ? statsResponse : { skills: statsResponse || {} };
+        const currentStats = (statsResponse && statsResponse.skills) ? statsResponse : { skills: statsResponse || {} };
         
         // Debug log in development
         if (process.env.NODE_ENV === 'development') {
