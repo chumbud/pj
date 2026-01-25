@@ -456,25 +456,28 @@ class YippeeCounter {
         this.socket.on('yippee-update', (data) => {
                 const serverCount = data.count || 0;
                 
-                // Update location display if provided
-                if (data.location) {
-                    this.updateLocationDisplay(data.location);
-                }
-                
-                // Only update if it's different and not from our own increment
-                if (serverCount !== this.currentCount && !this.isLocalIncrement) {
-                    const oldCount = this.currentCount;
-                    this.currentCount = serverCount;
-                    this.updateDisplay(this.currentCount, false);
+                // Only process if it's not from our own increment
+                if (!this.isLocalIncrement) {
+                    // Always update location display if provided (shows latest person who clicked)
+                    if (data.location) {
+                        this.updateLocationDisplay(data.location);
+                    }
                     
-                    // Update cache
-                    localStorage.setItem('yippee-count', serverCount.toString());
-                    
-                    // Show "someone yippee'd!" message and highlight digits
-                    this.showSomeoneYippeedMessage();
-                    
-                    // Animate the change
-                    this.animateTicker(oldCount, serverCount);
+                    // Update count if it's different
+                    if (serverCount !== this.currentCount) {
+                        const oldCount = this.currentCount;
+                        this.currentCount = serverCount;
+                        this.updateDisplay(this.currentCount, false);
+                        
+                        // Update cache
+                        localStorage.setItem('yippee-count', serverCount.toString());
+                        
+                        // Show "someone yippee'd!" message and highlight digits
+                        this.showSomeoneYippeedMessage();
+                        
+                        // Animate the change
+                        this.animateTicker(oldCount, serverCount);
+                    }
                 }
                 
                 // Reset flag after processing
