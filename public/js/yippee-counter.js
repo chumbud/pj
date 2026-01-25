@@ -255,10 +255,6 @@ class YippeeCounter {
     }
     
     spawnYippeeGif() {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:159',message:'spawnYippeeGif called',data:{imagesReady:this.imagesReady,imagesCount:this.yippeeImages?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
-        
         if (!this.button || !this.yippeeImages || this.yippeeImages.length === 0) return;
         if (!this.imagesReady) return; // Don't spawn if images aren't ready
         
@@ -270,10 +266,6 @@ class YippeeCounter {
         const randomIndex = Math.floor(Math.random() * this.yippeeImages.length);
         const imageSrc = this.yippeeImages[randomIndex];
         const preloadedImg = this.preloadedImages[randomIndex];
-        
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:172',message:'Image selected',data:{randomIndex,imageSrc,preloadedComplete:preloadedImg?.complete,preloadedNaturalWidth:preloadedImg?.naturalWidth,preloadedSrc:preloadedImg?.src},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         
         // Random x position within button bounds
         const imageWidth = 50;
@@ -310,10 +302,6 @@ class YippeeCounter {
             img = preloadedImg.cloneNode(false);
             img.setAttribute('data-image-setup', 'true');
             
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:197',message:'Using cloned preloaded image',data:{complete:img.complete,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,src:img.src},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
-            
             // Force animation restart by removing and re-adding src
             const originalSrc = img.src;
             img.removeAttribute('src');
@@ -321,10 +309,6 @@ class YippeeCounter {
             void img.offsetWidth;
             // Set src back - this forces browser to restart animation
             img.src = originalSrc;
-            
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:206',message:'Src reset for animation restart',data:{complete:img.complete,naturalWidth:img.naturalWidth,src:img.src},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
         } else {
             // Fallback: create new image if preloaded isn't ready
             img = document.createElement('img');
@@ -349,24 +333,13 @@ class YippeeCounter {
         wrapper.appendChild(img);
         document.body.appendChild(wrapper);
         
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:225',message:'DOM inserted, starting animation immediately',data:{complete:img.complete,naturalWidth:img.naturalWidth,naturalHeight:img.naturalHeight,inDOM:document.body.contains(wrapper)},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
-        
         // Start animation on next frame - single RAF for better performance
         requestAnimationFrame(() => {
             wrapper.style.animation = 'yippeeFloat 1s ease-out forwards';
-            
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:232',message:'Animation started',data:{animation:wrapper.style.animation,imageComplete:img.complete},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
-            // #endregion
         });
         
         // Clean up after animation completes - use animationend event for precision
         const cleanup = () => {
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/725f85c4-b292-4982-a8ab-43a12c9ac595',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'yippee-counter.js:244',message:'Cleanup timeout fired',data:{stillInDOM:document.body.contains(wrapper)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-            // #endregion
             if (wrapper.parentNode) {
                 wrapper.parentNode.removeChild(wrapper);
             }
