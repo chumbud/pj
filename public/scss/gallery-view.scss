@@ -19,16 +19,15 @@ $breakpoint-tablet: 76.8rem;
 
     .image-area {
         width: 100vw;
-        height: 50vh;
+        height: 60vh;
         overflow: hidden;
         display: flex;
 
         @media (min-width: $breakpoint-tablet) {
-            height: auto;
             width: auto;
             overflow: visible;
-            width: 40%;
-            max-width: 500px;
+            width: 50%;
+            max-width: 600px;
         }
 
         #main-image {
@@ -37,7 +36,6 @@ $breakpoint-tablet: 76.8rem;
 
             @media (min-width: $breakpoint-tablet) {
                 height: auto;
-                max-width: 500px;
             }
         }
     }
@@ -208,8 +206,8 @@ $breakpoint-tablet: 76.8rem;
         height: 30vh;
         font-size: 3rem;
         @media (min-width: $breakpoint-tablet) {
-            width: 500px;
-            height: 500px;
+            width: 600px;
+            height: 600px;
         }
     }
     #special-details-area {
