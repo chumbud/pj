@@ -56,6 +56,9 @@ const interestsList = [
     { text: "french house", imageUrl: null, linkUrl: "https://youtu.be/mMfxI3r_LyA" },
     { text: "hip hop", imageUrl: null, linkUrl: "https://youtu.be/fXJc2NYwHjw" },
     { text: "megabonk", imageUrl: null, linkUrl: "https://steamcommunity.com/app/3405340" },
+    { text: null, imageUrl: "img/endfield.webp", linkUrl: null },
+    { text: null, imageUrl: "img/riso-drums.webp", linkUrl: null },
+    { text: null, imageUrl: "img/marathon-logo-complex-green.webp", linkUrl: null },
 ];
 
 const EASTER_EGG_INTEREST = { 

@@ -429,6 +429,21 @@ app.post('/api/contact', async (req, res) => {
 // YIPPEE Counter endpoints
 const YIPPEE_COUNTER_FILE = path.join(__dirname, 'yippee-counter.json');
 
+/** API only exposes last yippee as an ISO timestamp string (never legacy geo objects). */
+function yippeeLastAtForApi(lastLocation) {
+    if (lastLocation == null || typeof lastLocation !== 'string') return null;
+    const t = Date.parse(lastLocation);
+    return Number.isNaN(t) ? null : lastLocation;
+}
+
+function migrateYippeeCounterIfLegacyGeo(counter) {
+    if (counter.lastLocation != null && typeof counter.lastLocation === 'object') {
+        delete counter.lastLocation;
+        return true;
+    }
+    return false;
+}
+
 // Initialize counter file if it doesn't exist or is empty/corrupted
 function initCounterFile() {
     if (!fs.existsSync(YIPPEE_COUNTER_FILE)) {
@@ -463,9 +478,12 @@ app.get('/api/yippee', (req, res) => {
             return res.json({ count: 0, location: null });
         }
         const counter = JSON.parse(data);
-        res.json({ 
+        if (migrateYippeeCounterIfLegacyGeo(counter)) {
+            fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
+        }
+        res.json({
             count: counter.count || 0,
-            location: counter.lastLocation || null
+            location: yippeeLastAtForApi(counter.lastLocation)
         });
     } catch (error) {
         console.error('Error reading counter:', error);
@@ -473,37 +491,39 @@ app.get('/api/yippee', (req, res) => {
     }
 });
 
-// Get user location (proxy to avoid CORS)
+// Get user location by looking up the requesting client's IP (not the server's)
 app.get('/api/location', async (req, res) => {
     try {
-        const response = await axios.get('https://ipapi.co/json/', {
-            timeout: 5000, // 5 second timeout
-            headers: {
-                'User-Agent': 'Mozilla/5.0'
-            }
+        const clientIp = getClientIP(req).trim();
+        // Skip lookup for localhost and private IPs
+        if (!clientIp || clientIp === 'unknown' ||
+            clientIp === '127.0.0.1' || clientIp === '::1' ||
+            clientIp.startsWith('::ffff:127.') || clientIp.startsWith('10.') ||
+            clientIp.startsWith('172.16.') || clientIp.startsWith('172.17.') ||
+            clientIp.startsWith('172.18.') || clientIp.startsWith('172.19.') ||
+            /^172\.(2[0-9]|3[0-1])\./.test(clientIp) || clientIp.startsWith('192.168.')) {
+            return res.json({ error: 'Location not available for this network' });
+        }
+        const response = await axios.get(`https://ipapi.co/${clientIp}/json/`, {
+            timeout: 5000,
+            headers: { 'User-Agent': 'Mozilla/5.0' }
         });
         const data = response.data;
-        
-        if (data.city && data.region && data.country_code) {
+        if (data && data.city && data.region && data.country_code) {
             res.json({
                 city: data.city,
                 region: data.region,
                 countryCode: data.country_code
             });
         } else {
-            // Return success but with null data instead of error
             res.json({ error: 'Location data not available' });
         }
     } catch (error) {
-        // Handle rate limiting (429) gracefully - return 200 with error message
         if (error.response && error.response.status === 429) {
             console.warn('Location API rate limited, returning empty response');
             return res.json({ error: 'Location service temporarily unavailable' });
         }
-        
-        // Handle other errors
         console.error('Error fetching location:', error.message);
-        // Return 200 with error instead of 500 to prevent frontend errors
         res.json({ error: 'Failed to fetch location' });
     }
 });
@@ -515,36 +535,30 @@ app.post('/api/yippee/increment', (req, res) => {
         const data = fs.readFileSync(YIPPEE_COUNTER_FILE, 'utf8');
         // Handle empty file
         if (!data || data.trim() === '') {
-            const counter = { count: 1 };
-            if (req.body && req.body.location) {
-                counter.lastLocation = req.body.location;
-            }
+            const counter = { count: 1, lastLocation: new Date().toISOString() };
             fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
             
-            const responseData = { 
+            const responseData = {
                 count: counter.count,
-                location: counter.lastLocation || null
+                location: yippeeLastAtForApi(counter.lastLocation)
             };
-            
+
             // Broadcast update to all connected clients
             io.emit('yippee-update', responseData);
-            
+
             return res.json(responseData);
         }
-        
+
         const counter = JSON.parse(data);
+        migrateYippeeCounterIfLegacyGeo(counter);
         counter.count = (counter.count || 0) + 1;
-        
-        // Store location if provided (req.body should be parsed by express.json())
-        if (req.body && req.body.location) {
-            counter.lastLocation = req.body.location;
-        }
-        
+        counter.lastLocation = new Date().toISOString();
+
         fs.writeFileSync(YIPPEE_COUNTER_FILE, JSON.stringify(counter), 'utf8');
-        
-        const responseData = { 
+
+        const responseData = {
             count: counter.count,
-            location: counter.lastLocation || null
+            location: yippeeLastAtForApi(counter.lastLocation)
         };
         
         // Broadcast update to all connected clients

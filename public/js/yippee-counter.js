@@ -28,7 +28,6 @@ class YippeeCounter {
         this.pendingIncrements = 0;
         this.socket = null;
         this.isLocalIncrement = false; // Track if increment is from local user
-        this.currentLocation = null; // Store current user's location
         this.tapSound = null; // For tap sound
         
         // Array of yippee GIF images - all numbered by ID
@@ -137,9 +136,6 @@ class YippeeCounter {
         
         // Then sync with server in background
         this.loadCount();
-        
-        // Get user's location
-        this.getUserLocation();
         
         // Set up button click handler - allow spam clicking (both desktop and mobile)
         const handleClick = (event) => {
@@ -621,9 +617,7 @@ class YippeeCounter {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                location: this.currentLocation
-            })
+            body: JSON.stringify({})
         })
         .then(response => {
             // Check if response is ok before parsing JSON
@@ -747,89 +741,30 @@ class YippeeCounter {
         }, 1500);
     }
     
-    async getUserLocation() {
-        try {
-            // Use backend proxy to avoid CORS issues
-            const response = await fetch('/api/location');
-            if (!response.ok) {
-                // If server returns error status, log but don't throw
-                console.warn('Location API returned error status:', response.status);
-                return;
-            }
-            const data = await response.json();
-            
-            // Check if response contains an error message
-            if (data.error) {
-                console.warn('Location API error:', data.error);
-                return;
-            }
-            
-            // Only set location if we have valid data
-            if (data.city && data.region && data.countryCode) {
-                this.currentLocation = {
-                    city: data.city,
-                    region: data.region,
-                    countryCode: data.countryCode
-                };
-            }
-        } catch (error) {
-            console.warn('Error getting location:', error.message);
-            // Silently fail - location is optional
-        }
-    }
-    
-    getCountryFlag(countryCode) {
-        if (!countryCode || countryCode.length !== 2) return '';
-        
-        // Convert country code to flag emoji
-        // Each flag emoji is made of two regional indicator symbols (U+1F1E6 to U+1F1FF)
-        const upperCode = countryCode.toUpperCase();
-        
-        // Validate that both characters are A-Z
-        if (!/^[A-Z]{2}$/.test(upperCode)) {
-            return '';
-        }
-        
-        const codePoints = [
-            0x1F1E6 + (upperCode.charCodeAt(0) - 65), // First letter
-            0x1F1E6 + (upperCode.charCodeAt(1) - 65)  // Second letter
-        ];
-        
-        try {
-            return String.fromCodePoint(...codePoints);
-        } catch (e) {
-            console.error('Error generating flag emoji:', e, countryCode);
-            return '';
-        }
-    }
-    
     updateLocationDisplay(location) {
         const updateLocation = (locationElement) => {
             if (!locationElement) return;
             
             if (!location) {
-                // Show placeholder if no location
                 locationElement.textContent = '...';
                 return;
             }
             
-            const { city, region, countryCode } = location;
-            if (city && region) {
-                let locationText = `${city}, ${region}`;
-                
-                if (countryCode) {
-                    const flag = this.getCountryFlag(countryCode);
-                    if (flag) {
-                        locationElement.textContent = `${locationText} ${flag}`;
-                    } else {
-                        locationElement.textContent = locationText;
-                    }
+            if (typeof location === 'string') {
+                const t = Date.parse(location);
+                if (!Number.isNaN(t)) {
+                    locationElement.textContent = new Date(t).toLocaleString(undefined, {
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                    });
                 } else {
-                    locationElement.textContent = locationText;
+                    locationElement.textContent = '...';
                 }
-            } else {
-                locationElement.textContent = '...';
+                return;
             }
+
+            // Ignore non-string payloads (e.g. stale geo objects from old servers)
+            locationElement.textContent = '...';
         };
         
         // Update desktop location
