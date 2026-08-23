@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  text-wrap: pretty;
+}
+
 ::root {
   font-size: 2vw;
 }
@@ -102,7 +106,7 @@ a[href^="https://"]:hover:after {
   width: 100%;
   align-items: center;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 3rem;
 }
 @media (min-width: 76.8rem) {
   .page-layout {
@@ -127,10 +131,10 @@ a[href^="https://"]:hover:after {
   flex-direction: column;
   gap: 1rem;
   z-index: 5;
-  padding-top: 2rem;
+  padding-top: 5rem;
 }
 .left-content .emoji-header {
-  font-size: 4rem;
+  font-size: 3rem;
   font-weight: 800;
   font-family: monospace;
   position: relative;
@@ -165,7 +169,7 @@ a[href^="https://"]:hover:after {
   right: -2rem;
 }
 .left-content p {
-  font-size: 3.5rem;
+  font-size: 2.75rem;
   max-width: 50rem;
   font-weight: 500;
   line-height: 1.2;
@@ -360,7 +364,7 @@ a[href^="https://"]:hover:after {
 .cta-link {
   color: #ff00ff;
   font-weight: 800;
-  font-size: 5rem;
+  font-size: 4rem;
   text-decoration-style: solid;
   text-decoration-color: #ff00ff;
   gap: 1rem;
@@ -423,7 +427,8 @@ a[href^="https://"]:hover:after {
   opacity: 0.5;
   z-index: -1;
   right: 0;
-  bottom: 25vh;
+  top: unset;
+  bottom: unset;
   left: 0;
 }
 @media (min-width: 76.8rem) {
@@ -845,14 +850,22 @@ a[href^="https://"]:hover:after {
   .nav .yippee-counter-container {
     display: none;
   }
+  .left-content .bio {
+    margin-top: 1rem;
+    line-height: 1.4;
+  }
+  .left-content .cta-link {
+    margin-top: 0;
+  }
   .mobile-yippee {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     padding: 2rem 2rem 1.5rem 2rem;
     background-color: white;
     border: 1px solid #606060;
-    margin-top: 2rem;
+    margin-top: 5rem;
     width: 100%;
     gap: 0.5rem;
     position: relative;
@@ -878,7 +891,8 @@ a[href^="https://"]:hover:after {
     border-radius: 0.5rem;
     justify-content: space-between;
     overflow: hidden;
-    width: 100%;
+    flex: 1 1 0;
+    min-width: 0;
     gap: 0.5rem;
     position: relative;
   }
@@ -909,6 +923,8 @@ a[href^="https://"]:hover:after {
     font-size: 0.9rem;
     color: rgba(0, 0, 0, 0.8);
     text-align: center;
+    order: 99;
+    flex: 0 0 100%;
     width: 100%;
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
@@ -925,8 +941,8 @@ a[href^="https://"]:hover:after {
     border: none;
     padding: 0;
     cursor: pointer;
-    width: 100%;
-    margin-top: 3px;
+    min-width: 0;
+    margin-top: 0;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -934,6 +950,7 @@ a[href^="https://"]:hover:after {
     background-color: transparent;
     text-decoration: none;
     position: relative;
+    top: -9px;
     height: auto;
   }
   .mobile-yippee .yippee-button:before {
@@ -943,7 +960,7 @@ a[href^="https://"]:hover:after {
     font-weight: 400;
     color: black;
     line-height: 1;
-    padding: 1.5rem 0;
+    padding: 1.5rem 2rem;
     display: flex;
     position: relative;
     align-items: center;
@@ -953,22 +970,21 @@ a[href^="https://"]:hover:after {
     z-index: 1;
     background-color: rgb(255, 232, 255);
     border: 3px solid rgb(255, 232, 255);
-    border-radius: 0.75rem;
+    border-radius: 1.25rem;
     border-bottom: none;
     transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
   }
   .mobile-yippee .yippee-button:after {
     content: "";
     display: block;
-    top: -7px;
+    top: -6px;
     width: 100%;
     position: relative;
-    height: 2rem;
+    height: 1.5rem;
     background-color: rgb(255, 186, 255);
     border: 3px solid rgb(255, 186, 255);
-    border-radius: 0 0 0.75rem 0.75rem;
+    border-radius: 0 0 1.25rem 1.25rem;
     z-index: 0;
-    top: -0.5rem;
     transition: all 0.15s linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.352 25.5%, 1.372 28.2%, 1.379 31.1%, 1.374 34.2%, 1.357 37.6%, 1.307 43.7%, 1.121 61.8%, 1.074 67.8%, 1.04 73.7%, 1.007 84.7%, 1);
   }
   .mobile-yippee .yippee-button:hover:before {
@@ -1389,8 +1405,13 @@ a[href^="https://"]:hover:after {
 }
 
 .mobile-feed-link {
-  top: 1rem;
-  right: 2rem;
+  top: 0;
+  right: 0;
+  width: 100%;
+  background-color: white;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: right;
   position: fixed;
   z-index: 1000;
 }
@@ -1686,5 +1707,3 @@ a[href^="https://"]:hover:after {
 .contact-status.error {
   color: #f87171;
 }
-
-/*# sourceMappingURL=style.css.map */
