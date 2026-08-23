@@ -428,7 +428,7 @@ a[href^="https://"]:hover:after {
   z-index: -1;
   right: 0;
   top: unset;
-  bottom: unset;
+  bottom: 4rem;
   left: 0;
 }
 @media (min-width: 76.8rem) {
