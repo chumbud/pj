@@ -950,7 +950,7 @@ a[href^="https://"]:hover:after {
     background-color: transparent;
     text-decoration: none;
     position: relative;
-    top: -9px;
+    top: unset;
     height: auto;
   }
   .mobile-yippee .yippee-button:before {
